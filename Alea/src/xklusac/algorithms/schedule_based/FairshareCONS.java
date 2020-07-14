@@ -21,7 +21,8 @@ import xklusac.extensions.WallclockComparator;
  */
 public class FairshareCONS implements SchedulingPolicy {
 
-    private Scheduler scheduler;
+    //private Scheduler scheduler;
+    protected Scheduler scheduler;
 
     public FairshareCONS(Scheduler scheduler) {
         this.scheduler = scheduler;

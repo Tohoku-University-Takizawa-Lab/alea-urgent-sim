@@ -127,6 +127,7 @@ public class GridletInfo {
     private long ram;
     private int numNodes;
     private int ppn;
+    private int urgency;
 
     private HashMap<Integer, Boolean> resourceSuitable;
 
@@ -170,6 +171,7 @@ public class GridletInfo {
         this.setPpn(gl.getPpn());
         this.setResourceSuitable(new HashMap());
         this.setExpectedWaitTime(this.getExpectedWaitTime());
+        this.setUrgency(gl.getUrgency());
     }
 
     /**
@@ -736,4 +738,12 @@ public class GridletInfo {
         this.expectedWaitTime = expectedWaitTime;
     }
 
+    public int getUrgency() {
+        return urgency;
+    }
+
+    public void setUrgency(int urgency) {
+        this.urgency = urgency;
+    }
+    
 }

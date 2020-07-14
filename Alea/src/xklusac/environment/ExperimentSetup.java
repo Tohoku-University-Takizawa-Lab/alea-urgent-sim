@@ -6,7 +6,7 @@ import xklusac.algorithms.schedule_based.optimization.TabuSearch;
 import xklusac.algorithms.schedule_based.optimization.RandomSearch;
 import xklusac.algorithms.schedule_based.optimization.WeightedRandomSearch;
 import xklusac.algorithms.schedule_based.CONS;
-import xklusac.algorithms.schedule_based.FairshareCONS;
+import xklusac.algorithms.schedule_based.UrgentCONS;
 import xklusac.algorithms.queue_based.multi_queue.EASY_Backfilling;
 import xklusac.algorithms.queue_based.multi_queue.AggressiveBackfilling;
 import xklusac.algorithms.queue_based.multi_queue.FairshareMetaBackfilling;
@@ -738,6 +738,12 @@ public class ExperimentSetup {
                     use_compresion = true;
                     suff = "CONS+compression";
                 }
+                if (alg == 401) {
+                    policy = new UrgentCONS(scheduler);
+                    // Conservative backfilling prioritizing Urgent jobs (no RAM support)
+                    use_compresion = true;
+                    suff = "UrgentCONS+compression";
+                }
                 
                 if (alg == 5) {
                     policy = new PBS_PRO(scheduler);
@@ -777,7 +783,7 @@ public class ExperimentSetup {
                     }
                 }
                 if (alg == 9) {
-                    policy = new FairshareCONS(scheduler);
+                    policy = new UrgentCONS(scheduler);
                     // Conservative backfilling with fairshare (no RAM support)
                     use_compresion = true;
                     suff = "FairShareCONS+compr.";

@@ -445,6 +445,18 @@ public class SWFLoader extends GridSim {
         if (queue.contains("ncbr")) {
             properties += ":cl_perian";
         }
+        
+        // Setting priority
+        int urgency = 0;   // Default priority
+        if (data_set.contains("SDSC-DS")) {
+            //System.out.println(queue);
+            if (queue.equals("0") || queue.equals("1")) {
+                urgency = 999;
+                //System.out.println("Found urgent job!");
+            }
+            //else if (queue.equals("1"))
+            //    urgency = 99;
+        }
 
         if (!Scheduler.all_queues_names.contains(queue) && ExperimentSetup.use_queues) {
             fail++;
@@ -454,8 +466,10 @@ public class SWFLoader extends GridSim {
 
         // manually established - fix it according to your needs
         double deadline = job_limit * 2;
+        //ComplexGridlet gl = new ComplexGridlet(id, user, job_limit, new Double(length), estimatedLength, 10, 10,
+        //        "Linux", "Risc arch.", arrival, deadline, 1, numCPU, 0.0, queue, properties, perc, ram, numNodes, ppn);
         ComplexGridlet gl = new ComplexGridlet(id, user, job_limit, new Double(length), estimatedLength, 10, 10,
-                "Linux", "Risc arch.", arrival, deadline, 1, numCPU, 0.0, queue, properties, perc, ram, numNodes, ppn);
+                "Linux", "Risc arch.", arrival, deadline, 1, numCPU, 0.0, queue, properties, perc, ram, numNodes, ppn, urgency);
 
         // and set user id to the Scheduler entity - otherwise it would be returned to the JobLoader when completed.
         //System.out.println(id+" job has limit = "+(job_limit/3600.0)+" queue = "+queue);

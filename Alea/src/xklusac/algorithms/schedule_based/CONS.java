@@ -25,7 +25,8 @@ import xklusac.extensions.SchedulingEvent;
  */
 public class CONS implements SchedulingPolicy {
 
-    private Scheduler scheduler;
+    //private Scheduler scheduler;
+    protected Scheduler scheduler;
     Schedule_Visualizator anim = null;
 
     public CONS(Scheduler scheduler) {

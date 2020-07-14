@@ -63,6 +63,7 @@ public class ComplexGridlet extends Gridlet {
     private int numNodes;
     private int ppn;
     private boolean backfilled;
+    private int urgency;
 
     private String onJobStart = null;
     private String onJobCompl = null;
@@ -133,6 +134,17 @@ public class ComplexGridlet extends Gridlet {
         this.setRam(ram);
         this.setPpn(ppn);
         this.setNumNodes(numNodes);
+        this.setUrgency(0);
+    }
+    
+    public ComplexGridlet(int gridletID, String user, long job_limit, double gridletLength, double estimatedLength, long gridletFileSize,
+            long gridletOutputSize, String oSrequired, String archRequired,
+            double arrival_time, double due_date, int priority, int numPE, double estMach, String queue, String properties, double percentage,
+            long ram, int numNodes, int ppn, int urgency) {
+        
+        this(gridletID, user, job_limit, gridletLength, estimatedLength, gridletFileSize, gridletOutputSize, oSrequired, archRequired,
+                arrival_time, due_date, priority, numPE, estMach, queue, properties, percentage, ram, numNodes, ppn);
+        this.setUrgency(urgency);
     }
 
     /**
@@ -374,4 +386,11 @@ public class ComplexGridlet extends Gridlet {
         this.backfilled = backfilled;
     }
 
+    public int getUrgency() {
+        return urgency;
+    }
+
+    public void setUrgency(int urgency) {
+        this.urgency = urgency;
+    }
 }

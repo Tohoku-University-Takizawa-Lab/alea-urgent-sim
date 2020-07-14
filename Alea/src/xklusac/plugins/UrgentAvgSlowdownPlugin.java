@@ -15,7 +15,7 @@ public class UrgentAvgSlowdownPlugin extends AverageSlowdownPlugin {
 
     @Override
     public void cumulate(ComplexGridlet gridletReceived) {
-        if (gridletReceived.getPriority() == 999) {
+        if (gridletReceived.getUrgency() == 999) {
             double finish_time = gridletReceived.getFinishTime();
             double cpu_time = gridletReceived.getActualCPUTime();
             double arrival = gridletReceived.getArrival_time();
