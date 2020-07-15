@@ -73,30 +73,34 @@ public class PreemptiveUJF extends UJF {
                     // Prioritize jobs with longer time-to-finish to be preempted 
                     Collections.sort(runInfos, UrgentGridletUtil.finishSoFarComparator);
                     
-                    int toFree = gi.getNumPE();
+                    int toFree = gi.getNumPE() - targetRi.getNumFreePE();
                     int visit = 0;
                     while (toFree > 0 && visit < runInfos.size()) {
                         GridletInfo info = runInfos.get(visit);
                         
+                        //System.out.format("- Preempting job %s (Mem=%d) for urgent_job=%d (PE:%d), toFree=%d\n",
+                        //       info.getID(), info.getRam(), gi.getID(), gi.getNumPE(), toFree);
+                        System.out.format("- Preempting job %s (PE=%d,Mem=%d) for urgent_job=%d (PE:%d), toFree=%d\n",
+                                info.getID(), info.getNumPE(), info.getRam(), gi.getID(), gi.getNumPE(), toFree);
+                        
                         //targetRi.resInExec.remove(info);
-                        targetRi.lowerResInExec(info);
+                        //targetRi.lowerResInExec(info);
                         scheduler.cancelJob(info.getGridlet(), targetRi.resource.getResourceID(), 0);
                         
                         // Resubmit to scheduling queue
                         targetRi.addLastGInfo(info);
                         
-                        toFree -= targetRi.getNumFreePE();
+                        toFree -= info.getNumPE();
                         visit++;
-                        System.out.format("- Job %s is preempted, toFree=%d, candidates=%d, urgent_job=%d\n",
-                                info.getID(), toFree, runInfos.size(), gi.getID());
+                        
                     }
                     // Now urgent job is ready to submit
-                    targetRi.addGInfoInExec(gi);
-                    gi.setResourceID(targetRi.resource.getResourceID());
-                    scheduler.submitJob(gi.getGridlet(), gi.getResourceID());
+                    //targetRi.addGInfoInExec(gi);
+                    //gi.setResourceID(targetRi.resource.getResourceID());
+                    //scheduler.submitJob(gi.getGridlet(), gi.getResourceID());
                     
-                    targetRi.is_ready = true;
-                    scheduled++;
+                    //targetRi.is_ready = true;
+                    //scheduled++;
                 }
                 return scheduled;
             }

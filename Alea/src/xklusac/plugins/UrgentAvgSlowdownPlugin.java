@@ -6,6 +6,7 @@
 package xklusac.plugins;
 
 import xklusac.environment.ComplexGridlet;
+import xklusac.environment.UrgentGridletUtil;
 
 /**
  *
@@ -15,7 +16,7 @@ public class UrgentAvgSlowdownPlugin extends AverageSlowdownPlugin {
 
     @Override
     public void cumulate(ComplexGridlet gridletReceived) {
-        if (gridletReceived.getUrgency() == 999) {
+        if (UrgentGridletUtil.isUrgent(gridletReceived)) {
             double finish_time = gridletReceived.getFinishTime();
             double cpu_time = gridletReceived.getActualCPUTime();
             double arrival = gridletReceived.getArrival_time();

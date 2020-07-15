@@ -12,17 +12,19 @@ import xklusac.environment.UrgentGridletUtil;
  *
  * @author agung
  */
-public class UrgentAvgWaitTimePlugin extends AverageWaitTimePlugin {
-    
+public class NonUrgentAvgSlowdownPlugin extends AverageSlowdownPlugin {
+
     @Override
     public void cumulate(ComplexGridlet gridletReceived) {
-        if (UrgentGridletUtil.isUrgent(gridletReceived)) {
+        if (!UrgentGridletUtil.isUrgent(gridletReceived)) {
             double finish_time = gridletReceived.getFinishTime();
             double cpu_time = gridletReceived.getActualCPUTime();
             double arrival = gridletReceived.getArrival_time();
             double response = Math.max(0.0, (finish_time - arrival));
-            waitTime += Math.max(0.0, (response - cpu_time));
+            slowdown += Math.max(1.0, (response / Math.max(1.0, cpu_time)));
         }
     }
+    
+    
     
 }

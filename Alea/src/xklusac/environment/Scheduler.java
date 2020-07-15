@@ -2063,7 +2063,7 @@ public class Scheduler extends GridSim {
         gridletPause(gl, resID, delay);
         //System.out.println(gl.getGridletID()+ " is submitted to "+GridSim.getEntityName(resID)+", FREE CPUs left = " + getFreeCPUs());
     }
-    
+     
     /**
      * This method prints to file all information about a submitted job.
      *

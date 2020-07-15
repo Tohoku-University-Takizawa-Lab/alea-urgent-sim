@@ -12,11 +12,11 @@ import xklusac.environment.UrgentGridletUtil;
  *
  * @author agung
  */
-public class UrgentAvgWaitTimePlugin extends AverageWaitTimePlugin {
+public class NonUrgentAvgWaitTimePlugin extends AverageWaitTimePlugin {
     
     @Override
     public void cumulate(ComplexGridlet gridletReceived) {
-        if (UrgentGridletUtil.isUrgent(gridletReceived)) {
+        if (!UrgentGridletUtil.isUrgent(gridletReceived)) {
             double finish_time = gridletReceived.getFinishTime();
             double cpu_time = gridletReceived.getActualCPUTime();
             double arrival = gridletReceived.getArrival_time();

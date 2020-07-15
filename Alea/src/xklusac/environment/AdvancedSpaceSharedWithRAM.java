@@ -369,6 +369,8 @@ public class AdvancedSpaceSharedWithRAM extends AllocPolicy {
             System.out.println(super.resName_ + ".SpaceShared.gridletCancel(): Cannot cancel" + " Gridlet #" + gridletId + " for User #" + userId + " since it has FINISHED.");
         }
 
+        gridletFinish(rgl, Gridlet.CANCELED);
+        
         // sends the Gridlet back to sender
         rgl.finalizeGridlet();
         super.sendCancelGridlet(GridSimTags.GRIDLET_CANCEL, rgl.getGridlet(),
