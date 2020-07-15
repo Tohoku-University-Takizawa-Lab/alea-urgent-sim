@@ -4,20 +4,15 @@
  */
 package xklusac.algorithms.schedule_based;
 
-import gridsim.GridSim;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
-import xklusac.environment.ExperimentSetup;
 import xklusac.environment.GridletInfo;
 import xklusac.environment.ResourceInfo;
 import xklusac.environment.Scheduler;
-import xklusac.extensions.EndTimeComparator;
-import xklusac.extensions.SchedulingEvent;
 import xklusac.extensions.UrgentFlagComparator;
 
 /**
- * Class CONS<p> extends CONS (Conservative Backfilling).
+ * Class UrgentCons<p> extends CONS (Conservative Backfilling).
  *
  * @author Agung
  */
@@ -35,17 +30,21 @@ public class UrgentCONS extends CONS {
         boolean sortNeeded = false;
         for (int i = 0; i < Scheduler.resourceInfoList.size(); i++) {
             ri = (ResourceInfo) Scheduler.resourceInfoList.get(i);
-            if (ri.resSchedule.size() > 1 && anyUrgentJobs(ri.resSchedule)) {
-                sortNeeded = true;
+            if (anyTailedUrgentJobs(ri.resSchedule)) {
                 Scheduler.schedQueue2.addAll(ri.resSchedule);
                 ri.resSchedule.clear();
                 ri.stable = false;
                 ri.holes.clear();
+                sortNeeded = true;
             }
         }
         if (sortNeeded) {
             Collections.sort(Scheduler.schedQueue2, new UrgentFlagComparator());
-
+            /*
+            for (int i = 0; i < Scheduler.schedQueue2.size(); i++)
+                System.out.print(((GridletInfo)Scheduler.schedQueue2.get(i)).getUrgency() +",");
+            System.out.println();
+            */
 
             // reinsert jobs using CONS
             for (int i = 0; i < Scheduler.schedQueue2.size(); i++) {
@@ -83,15 +82,18 @@ public class UrgentCONS extends CONS {
         return scheduled;
     }
     
-    public boolean anyUrgentJobs(ArrayList<GridletInfo> infos) {
+    public boolean anyTailedUrgentJobs(ArrayList<GridletInfo> infos) {
         boolean found = false;
-        int i = 1;
-        while (!found && i < infos.size()) {
-            GridletInfo info = infos.get(i);
-            GridletInfo prevInfo = infos.get(i-1);
-            if (info.getUrgency() > 0 && prevInfo.getUrgency() == 0)
-                found = true;
-            i++;
+        if (infos.size() > 1) { 
+            // Search backwards to achieve a shorter average searching time
+            int i = infos.size()-1;
+            while (!found && i > 0) {
+                GridletInfo info = infos.get(i);
+                GridletInfo prevInfo = infos.get(i-1);
+                if (info.getUrgency() > 0 && prevInfo.getUrgency() == 0)
+                    found = true;
+                i--;
+            }
         }
         return found;
     }
