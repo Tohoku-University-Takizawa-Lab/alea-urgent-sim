@@ -20,7 +20,8 @@ import xklusac.extensions.LengthComparator;
  */
 public class SJF implements SchedulingPolicy {
 
-    private Scheduler scheduler;
+    //private Scheduler scheduler;
+    protected Scheduler scheduler;
 
     public SJF(Scheduler scheduler) {
         this.scheduler = scheduler;

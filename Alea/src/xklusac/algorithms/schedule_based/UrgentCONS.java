@@ -18,6 +18,8 @@ import xklusac.extensions.UrgentFlagComparator;
  */
 public class UrgentCONS extends CONS {
 
+    UrgentFlagComparator comparator = new UrgentFlagComparator();
+    
     public UrgentCONS(Scheduler scheduler) {
         super(scheduler);
     }
@@ -25,12 +27,12 @@ public class UrgentCONS extends CONS {
     @Override
     public int selectJob() {
 
-        ResourceInfo ri = null;
+        ResourceInfo ri;// = null;
         // remove jobs, resort jobs via URGENT flags
         boolean sortNeeded = false;
         for (int i = 0; i < Scheduler.resourceInfoList.size(); i++) {
             ri = (ResourceInfo) Scheduler.resourceInfoList.get(i);
-            if (anyTailedUrgentJobs(ri.resSchedule)) {
+            if (!isUrgentJobsSorted(ri.resSchedule, comparator)) {
                 Scheduler.schedQueue2.addAll(ri.resSchedule);
                 ri.resSchedule.clear();
                 ri.stable = false;
@@ -39,7 +41,7 @@ public class UrgentCONS extends CONS {
             }
         }
         if (sortNeeded) {
-            Collections.sort(Scheduler.schedQueue2, new UrgentFlagComparator());
+            Collections.sort(Scheduler.schedQueue2, comparator);
             /*
             for (int i = 0; i < Scheduler.schedQueue2.size(); i++)
                 System.out.print(((GridletInfo)Scheduler.schedQueue2.get(i)).getUrgency() +",");
@@ -96,5 +98,17 @@ public class UrgentCONS extends CONS {
             }
         }
         return found;
+    }
+    
+    public boolean isUrgentJobsSorted(ArrayList<GridletInfo> infos, 
+            UrgentFlagComparator comparator) {
+        for (int i = 0; i < infos.size()-1; ++i) {
+            ///GridletInfo g1 = (GridletInfo) infos.get(i);
+            //GridletInfo g2 = (GridletInfo) infos.get(i+1);
+            if (comparator.compare(infos.get(i), infos.get(i+1)) > 0)
+                //System.out.println(g1.getUrgency() + " <> " + g2.getUrgency());
+                return false;
+        }
+        return true;
     }
 }

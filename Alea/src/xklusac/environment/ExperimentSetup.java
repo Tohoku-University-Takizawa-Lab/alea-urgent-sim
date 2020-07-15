@@ -33,6 +33,8 @@ import java.util.logging.Logger;
 import xklusac.extensions.*;
 import xklusac.extensions.Queue;
 import xklusac.algorithms.*;
+import xklusac.algorithms.queue_based.PreemptiveUJF;
+import xklusac.algorithms.queue_based.UJF;
 import xklusac.plugins.Plugin;
 import xklusac.plugins.PluginConfiguration;
 import xklusac.plugins.PluginFactory;
@@ -895,6 +897,16 @@ public class ExperimentSetup {
                     // this update would break the detection of fairshare changes in BF_CONS_Fair
                     use_compresion = true;
                     suff = "CONS-Fair-compr.";
+                }
+                if (alg == 24) {
+                    policy = new UJF(scheduler);
+                    // Urgent Job First policy
+                    suff = "UJF";
+                }
+                if (alg == 241) {
+                    policy = new PreemptiveUJF(scheduler);
+                    // Urgent Job First policy
+                    suff = "PreemptiveUJF";
                 }
 
                 dirG[4] = (sel_alg+1) + "-" + suff;

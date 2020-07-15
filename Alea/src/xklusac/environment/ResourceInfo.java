@@ -197,6 +197,7 @@ public class ResourceInfo {
             System.out.println("Error removing gi from InExec list.");
         }
     }
+    
 
     /**
      * Removes GridletInfo from Resource schedule
