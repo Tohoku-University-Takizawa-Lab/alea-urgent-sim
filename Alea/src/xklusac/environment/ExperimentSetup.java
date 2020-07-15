@@ -412,6 +412,8 @@ public class ExperimentSetup {
                 aCfg = new AleaConfiguration();
             else
                 aCfg = new AleaConfiguration(configFile);
+            
+            System.out.println("Configuration file: " + aCfg.getFileName());
         } catch (IOException e) { 
             System.err.println("Could not load configuration file!"+e);
             return;
