@@ -11,7 +11,8 @@ import xklusac.environment.SchedulerData;
  */
 public class AverageWaitTimePlugin extends AbstractPlugin implements Plugin {
     
-    private double waitTime;
+    //private double waitTime;
+    protected double waitTime;
 
     /**
      * @see Plugin#cumulate(xklusac.environment.ComplexGridlet) 

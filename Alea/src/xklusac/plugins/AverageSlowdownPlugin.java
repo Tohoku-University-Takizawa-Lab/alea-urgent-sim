@@ -11,7 +11,8 @@ import xklusac.environment.SchedulerData;
  */
 public class AverageSlowdownPlugin extends AbstractPlugin implements Plugin {
 
-    private double slowdown;
+    //private double slowdown;
+    protected double slowdown;
     
     /**
      * @see Plugin#cumulate(xklusac.environment.ComplexGridlet) 
