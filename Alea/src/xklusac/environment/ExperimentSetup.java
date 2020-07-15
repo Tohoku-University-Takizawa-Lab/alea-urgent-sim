@@ -401,10 +401,17 @@ public class ExperimentSetup {
     public static void main(String[] args) {
         String user_dir = System.getProperty("user.dir");
         
+        String configFile = null;
+        if (args.length > 0)
+            configFile = args[0];
+        
         Registration.register();
         
         try {
-            aCfg = new AleaConfiguration();
+            if (configFile == null)
+                aCfg = new AleaConfiguration();
+            else
+                aCfg = new AleaConfiguration(configFile);
         } catch (IOException e) { 
             System.err.println("Could not load configuration file!"+e);
             return;
