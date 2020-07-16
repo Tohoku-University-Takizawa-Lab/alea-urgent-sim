@@ -36,6 +36,8 @@ import xklusac.algorithms.*;
 import xklusac.algorithms.queue_based.PreemptiveUJF;
 import xklusac.algorithms.queue_based.UJF;
 import xklusac.algorithms.schedule_based.PreemptiveUrgentCONS;
+import xklusac.algorithms.schedule_based.PreemptiveUrgentFirstCONS;
+import xklusac.algorithms.schedule_based.UrgentFirstCONS;
 import xklusac.plugins.Plugin;
 import xklusac.plugins.PluginConfiguration;
 import xklusac.plugins.PluginFactory;
@@ -756,6 +758,12 @@ public class ExperimentSetup {
                     use_compresion = true;
                     suff = "UrgentCONS+compression";
                 }
+                if (alg == 402) {
+                    policy = new UrgentFirstCONS(scheduler);
+                    // Conservative backfilling prioritizing Urgent jobs (no RAM support)
+                    use_compresion = true;
+                    suff = "UrgentFirstCONS+compression";
+                }
               
                 
                 if (alg == 5) {
@@ -909,7 +917,7 @@ public class ExperimentSetup {
                 /*
                  * Preemptive-based schedulers
                  */
-                if (alg >= 25 && alg <= 26) {
+                if (alg >= 25 && alg <= 27) {
                 	
                 	SwapTimeGen swapTimeGen = null;
                 	
@@ -946,6 +954,12 @@ public class ExperimentSetup {
 	                    // Conservative backfilling prioritizing Urgent jobs (no RAM support)
 	                    use_compresion = true;
 	                    suff = "PreemptiveUrgentCONS+compression";
+	                }
+	                if (alg == 27) {
+	                    policy = new PreemptiveUrgentFirstCONS(scheduler, jobSwapper);
+	                    // Conservative backfilling prioritizing Urgent jobs (no RAM support)
+	                    use_compresion = true;
+	                    suff = "PreemptiveUrgentFirstCONS+compression";
 	                }
                 }
 
