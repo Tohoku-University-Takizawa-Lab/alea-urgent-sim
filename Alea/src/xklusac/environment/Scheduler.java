@@ -2064,13 +2064,23 @@ public class Scheduler extends GridSim {
     }
     
      public void pauseJob(ComplexGridlet gl, int resID, double delay) {
+    	 /*
         if (ExperimentSetup.use_queues) {
             ExperimentSetup.queues.get(gl.getQueue()).setUsed(ExperimentSetup.queues.get(gl.getQueue()).getUsed() - gl.getNumPE());
-        }
+        }*/
         //gridletSubmit(gl, resID);
         gridletPause(gl, resID, delay);
         //System.out.println(gl.getGridletID()+ " is submitted to "+GridSim.getEntityName(resID)+", FREE CPUs left = " + getFreeCPUs());
     }
+     public void resumeJob(ComplexGridlet gl, int resID, double delay) {
+    	 /*
+         if (ExperimentSetup.use_queues) {
+             ExperimentSetup.queues.get(gl.getQueue()).setUsed(ExperimentSetup.queues.get(gl.getQueue()).getUsed() - gl.getNumPE());
+         }*/
+         //gridletSubmit(gl, resID);
+         gridletResume(gl, resID, delay);
+         //System.out.println(gl.getGridletID()+ " is submitted to "+GridSim.getEntityName(resID)+", FREE CPUs left = " + getFreeCPUs());
+     }
      
     /**
      * This method prints to file all information about a submitted job.

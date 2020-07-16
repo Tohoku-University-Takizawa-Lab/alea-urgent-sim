@@ -6,6 +6,7 @@
 package xklusac.environment;
 
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Utility for urgent jobs
@@ -21,6 +22,17 @@ public class UrgentGridletUtil {
     
     public static boolean isUrgent(GridletInfo gi) {
         return gi.getUrgency() == DEFAULT_URGENCY;
+    }
+    
+    public static boolean isUrgentJobsSorted(List<GridletInfo> infos) {
+        for (int i = 0; i < infos.size()-1; ++i) {
+            ///GridletInfo g1 = (GridletInfo) infos.get(i);
+            //GridletInfo g2 = (GridletInfo) infos.get(i+1);
+            if (urgencyComparator.compare(infos.get(i), infos.get(i+1)) > 0)
+                return false;
+            	//System.out.println(g1.getUrgency() + " <> " + g2.getUrgency());
+        }
+        return true;
     }
     
     public static Comparator<GridletInfo> finishSoFarComparator = new Comparator<GridletInfo>() {
@@ -41,4 +53,21 @@ public class UrgentGridletUtil {
             return o2.getNumFreePE() - o1.getNumFreePE();
         }
     };
+    
+    /**
+     * UrgencyComparator<p>
+     * Compares two gridlets according to their urgencies.
+     */
+    public static Comparator<GridletInfo> urgencyComparator = new Comparator<GridletInfo>() {
+		@Override
+		public int compare(GridletInfo o1, GridletInfo o2) {
+	        // The gridlet with a higher urgency is moved to the left
+	        if(o1.getUrgency() > o2.getUrgency()) 
+	        	return -1;
+	        else if(o1.getUrgency() < o2.getUrgency()) 
+	        	return 1;
+	        else
+	        	return 0;
+		}
+	};
 }

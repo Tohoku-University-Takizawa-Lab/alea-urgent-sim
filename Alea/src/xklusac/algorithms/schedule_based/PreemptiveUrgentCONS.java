@@ -4,17 +4,14 @@
  */
 package xklusac.algorithms.schedule_based;
 
-import gridsim.GridSim;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+
 import xklusac.environment.GridletInfo;
 import xklusac.environment.JobSwapper;
 import xklusac.environment.ResourceInfo;
 import xklusac.environment.Scheduler;
 import xklusac.environment.UrgentGridletUtil;
-import xklusac.extensions.UrgentFlagComparator;
 
 /**
  * Class PreemptiveUrgentCons<p> extends CONS (Conservative Backfilling).
@@ -23,8 +20,6 @@ import xklusac.extensions.UrgentFlagComparator;
  */
 public class PreemptiveUrgentCONS extends CONS {
 
-    UrgentFlagComparator comparator = new UrgentFlagComparator();
-    
     private JobSwapper jobSwapper;
     
     public PreemptiveUrgentCONS(Scheduler scheduler, JobSwapper jobSwapper) {
@@ -40,7 +35,7 @@ public class PreemptiveUrgentCONS extends CONS {
         boolean sortNeeded = false;
         for (int i = 0; i < Scheduler.resourceInfoList.size(); i++) {
             ri = (ResourceInfo) Scheduler.resourceInfoList.get(i);
-            if (!isUrgentJobsSorted(ri.resSchedule, comparator)) {
+            if (!UrgentGridletUtil.isUrgentJobsSorted(ri.resSchedule)) {
                 Scheduler.schedQueue2.addAll(ri.resSchedule);
                 ri.resSchedule.clear();
                 ri.stable = false;
@@ -49,7 +44,7 @@ public class PreemptiveUrgentCONS extends CONS {
             }
         }
         if (sortNeeded) {
-            Collections.sort(Scheduler.schedQueue2, comparator);
+            Collections.sort(Scheduler.schedQueue2, UrgentGridletUtil.urgencyComparator);
             /*
             for (int i = 0; i < Scheduler.schedQueue2.size(); i++)
                 System.out.print(((GridletInfo)Scheduler.schedQueue2.get(i)).getUrgency() +",");
@@ -138,31 +133,4 @@ public class PreemptiveUrgentCONS extends CONS {
         return scheduled;
     }
     
-    public boolean anyTailedUrgentJobs(ArrayList<GridletInfo> infos) {
-        boolean found = false;
-        if (infos.size() > 1) { 
-            // Search backwards to achieve a shorter average searching time
-            int i = infos.size()-1;
-            while (!found && i > 0) {
-                GridletInfo info = infos.get(i);
-                GridletInfo prevInfo = infos.get(i-1);
-                if (info.getUrgency() > 0 && prevInfo.getUrgency() == 0)
-                    found = true;
-                i--;
-            }
-        }
-        return found;
-    }
-    
-    public boolean isUrgentJobsSorted(ArrayList<GridletInfo> infos, 
-            UrgentFlagComparator comparator) {
-        for (int i = 0; i < infos.size()-1; ++i) {
-            ///GridletInfo g1 = (GridletInfo) infos.get(i);
-            //GridletInfo g2 = (GridletInfo) infos.get(i+1);
-            if (comparator.compare(infos.get(i), infos.get(i+1)) > 0)
-                //System.out.println(g1.getUrgency() + " <> " + g2.getUrgency());
-                return false;
-        }
-        return true;
-    }
 }

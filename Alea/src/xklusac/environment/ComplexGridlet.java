@@ -64,6 +64,8 @@ public class ComplexGridlet extends Gridlet {
     private int ppn;
     private boolean backfilled;
     private int urgency;
+    private int numPreempted;
+    private double totalSwapDelay;
 
     private String onJobStart = null;
     private String onJobCompl = null;
@@ -135,6 +137,8 @@ public class ComplexGridlet extends Gridlet {
         this.setPpn(ppn);
         this.setNumNodes(numNodes);
         this.setUrgency(0);
+        this.setNumPreempted(0);
+        this.setTotalSwapDelay(0.0);
     }
     
     public ComplexGridlet(int gridletID, String user, long job_limit, double gridletLength, double estimatedLength, long gridletFileSize,
@@ -393,4 +397,29 @@ public class ComplexGridlet extends Gridlet {
     public void setUrgency(int urgency) {
         this.urgency = urgency;
     }
+
+	public int getNumPreempted() {
+		return numPreempted;
+	}
+
+	public void setNumPreempted(int numPreempted) {
+		this.numPreempted = numPreempted;
+	}
+
+	public double getTotalSwapDelay() {
+		return totalSwapDelay;
+	}
+
+	public void setTotalSwapDelay(double totalSwapDelay) {
+		this.totalSwapDelay = totalSwapDelay;
+	}
+	
+	public void addNumPreempted(int num) {
+		this.numPreempted += num;
+	}
+	
+	public void addTotalSwapDelay(double delay) {
+		this.totalSwapDelay += delay;
+	}
+
 }

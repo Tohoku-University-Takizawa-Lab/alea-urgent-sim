@@ -923,7 +923,8 @@ public class ExperimentSetup {
                 		swapTimeGen = new RandomSwapTime(swapinMinTime, swapinMaxTime,
                 					swapoutMinTime, swapoutMaxTime, seed);
                 			
-                		System.out.println("- Random swap time will be used for preemption");
+                		System.out.format("- Random swap time will be used for preemption: %.2f-%.2f s\n",
+                				swapoutMinTime, swapoutMaxTime);
                 	}
                 	else {
                 		double swapinTime =  aCfg.getDouble("constant_swap_time.swapin");

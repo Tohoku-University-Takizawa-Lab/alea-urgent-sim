@@ -8,10 +8,10 @@ import java.util.Date;
 import java.util.Collections;
 import xklusac.environment.GridletInfo;
 import xklusac.environment.Scheduler;
-import xklusac.extensions.UrgentFlagComparator;
+import xklusac.environment.UrgentGridletUtil;
 
 /**
- * Class UJF<p>
+ * Class UJF<p>(Urgent Job First)
  * Extends SJF (Shortest Job First) algorithm.
  * @author      Agung
  */
@@ -25,7 +25,7 @@ public class UJF extends SJF {
     public void addNewJob(GridletInfo gi) {
         double runtime1 = new Date().getTime();
         Scheduler.queue.addLast(gi);
-        Collections.sort(Scheduler.queue, new UrgentFlagComparator());
+        Collections.sort(Scheduler.queue, UrgentGridletUtil.urgencyComparator);
         Scheduler.runtime += (new Date().getTime() - runtime1);
         //System.out.println("New job has been received by SJF");
         /*

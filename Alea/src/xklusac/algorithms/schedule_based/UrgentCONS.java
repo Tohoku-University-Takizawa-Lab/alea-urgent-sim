@@ -9,7 +9,7 @@ import java.util.Collections;
 import xklusac.environment.GridletInfo;
 import xklusac.environment.ResourceInfo;
 import xklusac.environment.Scheduler;
-import xklusac.extensions.UrgentFlagComparator;
+import xklusac.environment.UrgentGridletUtil;
 
 /**
  * Class UrgentCons<p> extends CONS (Conservative Backfilling).
@@ -18,8 +18,6 @@ import xklusac.extensions.UrgentFlagComparator;
  */
 public class UrgentCONS extends CONS {
 
-    UrgentFlagComparator comparator = new UrgentFlagComparator();
-    
     public UrgentCONS(Scheduler scheduler) {
         super(scheduler);
     }
@@ -32,7 +30,7 @@ public class UrgentCONS extends CONS {
         boolean sortNeeded = false;
         for (int i = 0; i < Scheduler.resourceInfoList.size(); i++) {
             ri = (ResourceInfo) Scheduler.resourceInfoList.get(i);
-            if (!isUrgentJobsSorted(ri.resSchedule, comparator)) {
+            if (!UrgentGridletUtil.isUrgentJobsSorted(ri.resSchedule)) {
                 Scheduler.schedQueue2.addAll(ri.resSchedule);
                 ri.resSchedule.clear();
                 ri.stable = false;
@@ -41,7 +39,7 @@ public class UrgentCONS extends CONS {
             }
         }
         if (sortNeeded) {
-            Collections.sort(Scheduler.schedQueue2, comparator);
+            Collections.sort(Scheduler.schedQueue2, UrgentGridletUtil.urgencyComparator);
             /*
             for (int i = 0; i < Scheduler.schedQueue2.size(); i++)
                 System.out.print(((GridletInfo)Scheduler.schedQueue2.get(i)).getUrgency() +",");
@@ -100,15 +98,4 @@ public class UrgentCONS extends CONS {
         return found;
     }
     
-    public boolean isUrgentJobsSorted(ArrayList<GridletInfo> infos, 
-            UrgentFlagComparator comparator) {
-        for (int i = 0; i < infos.size()-1; ++i) {
-            ///GridletInfo g1 = (GridletInfo) infos.get(i);
-            //GridletInfo g2 = (GridletInfo) infos.get(i+1);
-            if (comparator.compare(infos.get(i), infos.get(i+1)) > 0)
-                //System.out.println(g1.getUrgency() + " <> " + g2.getUrgency());
-                return false;
-        }
-        return true;
-    }
 }
