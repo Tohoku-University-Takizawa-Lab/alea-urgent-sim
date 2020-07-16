@@ -756,12 +756,7 @@ public class ExperimentSetup {
                     use_compresion = true;
                     suff = "UrgentCONS+compression";
                 }
-                if (alg == 402) {
-                    policy = new PreemptiveUrgentCONS(scheduler);
-                    // Conservative backfilling prioritizing Urgent jobs (no RAM support)
-                    use_compresion = true;
-                    suff = "PreemptiveUrgentCONS+compression";
-                }
+              
                 
                 if (alg == 5) {
                     policy = new PBS_PRO(scheduler);
@@ -910,10 +905,47 @@ public class ExperimentSetup {
                     // Urgent Job First policy
                     suff = "UJF";
                 }
-                if (alg == 241) {
-                    policy = new PreemptiveUJF(scheduler);
-                    // Urgent Job First policy
-                    suff = "PreemptiveUJF";
+                
+                /*
+                 * Preemptive-based schedulers
+                 */
+                if (alg >= 25 && alg <= 26) {
+                	
+                	SwapTimeGen swapTimeGen = null;
+                	
+                	String swapTimeGenType = aCfg.getString("swap_time_gen");
+                	if (swapTimeGenType.equalsIgnoreCase("random")) {
+                		double swapinMinTime =  aCfg.getDouble("random_swap_time.swapin_range_min");
+                		double swapinMaxTime =  aCfg.getDouble("random_swap_time.swapin_range_max");
+                		double swapoutMinTime =  aCfg.getDouble("random_swap_time.swapout_range_min");
+                		double swapoutMaxTime =  aCfg.getDouble("random_swap_time.swapout_range_max");
+                		int seed =  aCfg.getInt("random_swap_time.seed");
+                		swapTimeGen = new RandomSwapTime(swapinMinTime, swapinMaxTime,
+                					swapoutMinTime, swapoutMaxTime, seed);
+                			
+                		System.out.println("- Random swap time will be used for preemption");
+                	}
+                	else {
+                		double swapinTime =  aCfg.getDouble("constant_swap_time.swapin");
+                		double swapoutTime =  aCfg.getDouble("constant_swap_time.swapout");
+                		swapTimeGen = new ConstantSwapTime(swapinTime, swapoutTime);
+                		System.out.println("- Constant swap time will be used for preemption: " 
+                				+ swapoutTime + ", " + swapinTime); 
+                	}
+                	
+                	JobSwapper jobSwapper = new JobSwapper(scheduler, swapTimeGen);
+                	
+	                if (alg == 25) {
+	                    policy = new PreemptiveUJF(scheduler, jobSwapper);
+	                    // Urgent Job First policy
+	                    suff = "PreemptiveUJF";
+	                }
+	                if (alg == 26) {
+	                    policy = new PreemptiveUrgentCONS(scheduler, jobSwapper);
+	                    // Conservative backfilling prioritizing Urgent jobs (no RAM support)
+	                    use_compresion = true;
+	                    suff = "PreemptiveUrgentCONS+compression";
+	                }
                 }
 
                 dirG[4] = (sel_alg+1) + "-" + suff;

@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import xklusac.environment.GridletInfo;
+import xklusac.environment.JobSwapper;
 import xklusac.environment.ResourceInfo;
 import xklusac.environment.Scheduler;
 import xklusac.environment.UrgentGridletUtil;
@@ -24,8 +25,11 @@ public class PreemptiveUrgentCONS extends CONS {
 
     UrgentFlagComparator comparator = new UrgentFlagComparator();
     
-    public PreemptiveUrgentCONS(Scheduler scheduler) {
+    private JobSwapper jobSwapper;
+    
+    public PreemptiveUrgentCONS(Scheduler scheduler, JobSwapper jobSwapper) {
         super(scheduler);
+        this.jobSwapper = jobSwapper;
     }
 
     @Override
@@ -76,7 +80,12 @@ public class PreemptiveUrgentCONS extends CONS {
                     gi.setResourceID(ri.resource.getResourceID());
                     // tell the user where to send which gridlet
 
-                    scheduler.submitJob(gi.getGridlet(), ri.resource.getResourceID());
+                    if (gi.isSuspended()) {
+                    	jobSwapper.swapin(gi, ri);
+                    }
+                    else {
+                    	scheduler.submitJob(gi.getGridlet(), ri.resource.getResourceID());
+                    }
 
                     ri.is_ready = true;
                     //scheduler.sim_schedule(GridSim.getEntityId("Alea_3.0_scheduler"), 0.0, AleaSimTags.GRIDLET_SENT, gi);
@@ -103,11 +112,12 @@ public class PreemptiveUrgentCONS extends CONS {
 
                         //targetRi.resInExec.remove(info);
                         //targetRi.lowerResInExec(info);
-                        scheduler.cancelJob(info.getGridlet(), ri.resource.getResourceID(), 0);
+                        //scheduler.cancelJob(info.getGridlet(), ri.resource.getResourceID(), 0);
+                        jobSwapper.swapout(info, ri);
 
                         // Resubmit to scheduling queue
                         //info.setPEs(new LinkedList<Integer>());
-                        ri.addLastGInfo(info);
+                        //ri.addLastGInfo(info);
 
                         //toFree -= ri.getNumFreePE();
                         toFree -= info.getNumPE();

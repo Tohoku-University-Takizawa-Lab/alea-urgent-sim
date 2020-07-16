@@ -2046,6 +2046,14 @@ public class Scheduler extends GridSim {
         //System.out.println(gl.getGridletID()+ " is submitted to "+GridSim.getEntityName(resID)+", FREE CPUs left = " + getFreeCPUs());
     }
     
+    public void submitJobWithDelay(ComplexGridlet gl, int resID, double delay) {
+        if (ExperimentSetup.use_queues) {
+            ExperimentSetup.queues.get(gl.getQueue()).setUsed(ExperimentSetup.queues.get(gl.getQueue()).getUsed() + gl.getNumPE());
+        }
+        gridletSubmit(gl, resID, delay, false);
+        //System.out.println(gl.getGridletID()+ " is submitted to "+GridSim.getEntityName(resID)+", FREE CPUs left = " + getFreeCPUs());
+    }
+    
     public void cancelJob(ComplexGridlet gl, int resID, double delay) {
         if (ExperimentSetup.use_queues) {
             ExperimentSetup.queues.get(gl.getQueue()).setUsed(ExperimentSetup.queues.get(gl.getQueue()).getUsed() - gl.getNumPE());

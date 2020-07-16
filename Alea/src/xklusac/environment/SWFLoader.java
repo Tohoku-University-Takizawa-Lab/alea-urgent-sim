@@ -78,7 +78,8 @@ public class SWFLoader extends GridSim {
     long prevram = -1;
     long prev_job_limit = -1;
     int count = 1;
-
+    int numUrgentJobs = 0;
+    
     /**
      * Creates a new instance of JobLoader
      */
@@ -137,7 +138,7 @@ public class SWFLoader extends GridSim {
                 continue;
             }
         }
-        System.out.println("Shuting down - last gridlet = " + current_gl + " of " + total_jobs);
+        System.out.println("Shuting down - last gridlet = " + current_gl + " of " + total_jobs + ", urgent = " + numUrgentJobs);
         super.sim_schedule(this.getEntityId("Alea_3.0_scheduler"), Math.round(last_delay + 2), AleaSimTags.SUBMISSION_DONE, new Integer(current_gl));
         Sim_event ev = new Sim_event();
         sim_get_next(ev);
@@ -281,9 +282,13 @@ public class SWFLoader extends GridSim {
             double gbram = Math.round(ram * 10 / 1048576.0) / 10.0;
             //System.out.println(id+ " requests "+ram+" KB RAM, "+gbram+" GB RAM per "+numCPU+" CPUs");
         }
+        
+        // Comment this to keep recording the memory requirements of jobs
+        /*
         if (!ExperimentSetup.use_RAM) {
             ram = 0;
         }
+        */
 
         // skip such job
         /*if (data_set.contains("zewura") || data_set.contains("wagapp") || data_set.contains("meta")) {
@@ -446,16 +451,24 @@ public class SWFLoader extends GridSim {
             properties += ":cl_perian";
         }
         
-        // Setting priority
-        int urgency = 0;   // Default priority
+        // Setting urgency
+        int urgency = 0;   // Default urgency
         if (data_set.contains("SDSC-DS")) {
             //System.out.println(queue);
             if (queue.equals("0") || queue.equals("1")) {
-                urgency = 999;
+                urgency = UrgentGridletUtil.DEFAULT_URGENCY;
+                numUrgentJobs++;
                 //System.out.println("Found urgent job!");
             }
             //else if (queue.equals("1"))
             //    urgency = 99;
+        }
+        else if (data_set.contains("LPC-EGEE") ) {
+        	int gid = Integer.parseInt(values[12]);
+        	if (gid == 2) {	// BioMed group
+        		urgency = UrgentGridletUtil.DEFAULT_URGENCY;
+        		numUrgentJobs++;
+        	}
         }
 
         if (!Scheduler.all_queues_names.contains(queue) && ExperimentSetup.use_queues) {

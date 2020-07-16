@@ -128,6 +128,8 @@ public class GridletInfo {
     private int numNodes;
     private int ppn;
     private int urgency;
+    private boolean suspended;
+    private double swapDelay;
 
     private HashMap<Integer, Boolean> resourceSuitable;
 
@@ -172,6 +174,8 @@ public class GridletInfo {
         this.setResourceSuitable(new HashMap());
         this.setExpectedWaitTime(this.getExpectedWaitTime());
         this.setUrgency(gl.getUrgency());
+        this.setSwapDelay(0.0);
+        this.setSuspended(false);
     }
 
     /**
@@ -745,5 +749,25 @@ public class GridletInfo {
     public void setUrgency(int urgency) {
         this.urgency = urgency;
     }
+
+	public boolean isSuspended() {
+		return suspended;
+	}
+
+	public void setSuspended(boolean suspended) {
+		this.suspended = suspended;
+	}
+
+	public double getSwapDelay() {
+		return swapDelay;
+	}
+
+	public void setSwapDelay(double newDelay) {
+		this.swapDelay = newDelay;
+	}
+	
+	public void addSwapDelay(double addDelay) {
+		this.swapDelay += addDelay;
+	}
     
 }

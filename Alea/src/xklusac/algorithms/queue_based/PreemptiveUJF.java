@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import xklusac.environment.GridletInfo;
+import xklusac.environment.JobSwapper;
 import xklusac.environment.ResourceInfo;
 import xklusac.environment.Scheduler;
 import xklusac.environment.UrgentGridletUtil;
@@ -19,8 +20,11 @@ import xklusac.environment.UrgentGridletUtil;
  */
 public class PreemptiveUJF extends UJF {
 
-    public PreemptiveUJF(Scheduler scheduler) {
+	private JobSwapper jobSwapper;
+	
+    public PreemptiveUJF(Scheduler scheduler, JobSwapper jobSwapper) {
         super(scheduler);
+        this.jobSwapper = jobSwapper;
     }
 
     @Override
@@ -51,7 +55,15 @@ public class PreemptiveUJF extends UJF {
                 r_cand.addGInfoInExec(gi);
                 // set the resource ID for this gridletInfo (this is the final scheduling decision)
                 gi.setResourceID(r_cand.resource.getResourceID());
-                scheduler.submitJob(gi.getGridlet(), r_cand.resource.getResourceID());
+                
+                // Add swapping in delay
+                if (gi.isSuspended()) {
+                	jobSwapper.swapin(gi, r_cand);
+                }
+                else {
+                	scheduler.submitJob(gi.getGridlet(), r_cand.resource.getResourceID());
+                }
+                
                 r_cand.is_ready = true;
                 //scheduler.sim_schedule(GridSim.getEntityId("Alea_3.0_scheduler"), 0.0, AleaSimTags.GRIDLET_SENT, gi);
                 scheduled++;
@@ -85,10 +97,12 @@ public class PreemptiveUJF extends UJF {
                         
                         //targetRi.resInExec.remove(info);
                         //targetRi.lowerResInExec(info);
-                        scheduler.cancelJob(info.getGridlet(), targetRi.resource.getResourceID(), 0);
+                        //scheduler.cancelJob(info.getGridlet(), targetRi.resource.getResourceID(), 0);
+                        jobSwapper.swapout(info, targetRi);
                         
-                        // Resubmit to scheduling queue
-                        targetRi.addLastGInfo(info);
+                        // Resubmit to the head of queue
+                        //targetRi.addLastGInfo(info);
+                        //targetRi.addGInfo(0, info);
                         
                         toFree -= info.getNumPE();
                         visit++;
