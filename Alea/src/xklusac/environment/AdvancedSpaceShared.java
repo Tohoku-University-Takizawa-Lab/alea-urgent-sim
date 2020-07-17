@@ -375,9 +375,11 @@ class AdvancedSpaceShared extends AllocPolicy {
         // if the Gridlet has finished beforehand then prints an error msg
         if (rgl.getGridletStatus() == Gridlet.SUCCESS) {
             System.out.println(super.resName_ + ".SpaceShared.gridletCancel(): Cannot cancel" + " Gridlet #" + gridletId + " for User #" + userId + " since it has FINISHED.");
+            gridletFinish(rgl, Gridlet.SUCCESS);
         }
-        
-        gridletFinish(rgl, Gridlet.CANCELED);
+        else {
+        	gridletFinish(rgl, Gridlet.CANCELED);
+        }
 
         // sends the Gridlet back to sender
         rgl.finalizeGridlet();

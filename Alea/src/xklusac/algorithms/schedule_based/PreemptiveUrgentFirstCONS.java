@@ -73,6 +73,7 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
 	                        boolean swapped = jobSwapper.swapout(info, ri);
 	                        
 	                        if (swapped) {
+	                        	ri.lowerResInExec(info);
 	                        	ri.removeGInfo(info);
 		                        // Put the preempted job into the earliest queue of regular jobs
 		                        int actual_idx = 0;

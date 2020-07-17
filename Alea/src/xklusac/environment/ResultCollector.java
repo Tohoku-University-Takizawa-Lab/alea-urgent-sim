@@ -427,7 +427,8 @@ public class ResultCollector {
         	System.out.println(gi.getID() + " suspended, time = " + GridSim.clock());
         	// Return s.t. it does not update the statistics since this job will execute again
         	// But, it cannot return immediately because the resource must be updated for next execution
-
+        	// We can just return now because the update resource is handled by the algorithm
+        	/*
         	for (int j = 0; j < resourceInfoList.size(); j++) {
                 ResourceInfo ri = (ResourceInfo) resourceInfoList.get(j);
                 if (gridlet_received.getResourceID() == ri.resource.getResourceID()) {
@@ -435,7 +436,7 @@ public class ResultCollector {
                     ri.lowerResInExec(gi);
                     break;
                 }
-            }
+            }*/
         	return;
     	} 
         else if (gridlet_received.getGridletStatus() == Gridlet.CANCELED) {

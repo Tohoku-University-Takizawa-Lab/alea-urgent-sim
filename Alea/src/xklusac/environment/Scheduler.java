@@ -726,6 +726,20 @@ public class Scheduler extends GridSim {
             Sim_event ev = new Sim_event();
             sim_get_next(ev);
 
+            /*
+            if (end_of_submission && ev.get_data() != null) {
+            	ComplexGridlet gi = (ComplexGridlet) ev.get_data();
+            	System.out.println("After submission, received: " + gi.getGridletID() + ", ev: " + ev.get_tag());
+    	        for (int i = 0; i < resourceInfoList.size(); i++) {
+    	            ResourceInfo ri = (ResourceInfo) resourceInfoList.get(i);
+    	            for (int j = 0; j < ri.resSchedule.size(); j++) {
+    	            	System.out.print(ri.resSchedule.get(j).getID() 
+    	            			+ ":" + ri.resSchedule.get(j).getUrgency()+"," );
+    	            }
+    	            System.out.println();
+    	        }
+            	
+            }*/
             if (ev.get_tag() == AleaSimTags.SCHEDULER_PRINT_FIRST_JOB_IN_QUEUE) {
                 if (this.all_queues.getFirst().size() > 0) {
                     GridletInfo gf = (GridletInfo) (this.all_queues.getFirst()).getFirst();
@@ -919,6 +933,7 @@ public class Scheduler extends GridSim {
                     }
                 } else {
 
+                	//System.out.println("Else status: " + gridlet_received.getGridletStatus());
                     if (gridlet_received.getOnJobCompl() != null) {
                         super.sim_schedule(this.getEntityId(gridlet_received.getOnJobCompl()), 60, AleaSimTags.AGENT_ONJOBCOMPL, gridlet_received);
                     }
@@ -955,6 +970,11 @@ public class Scheduler extends GridSim {
                             }
                         }
                     }
+                    
+                    //if (end_of_submission == true && getScheduleSize() > 0 && prev_scheduled == 0) {
+                    	//updateResourceInfos(clock());
+                    	//scheduleGridlets();
+                    //}
                 }
 
                 rc.addFinishedJobToResults(gridlet_received, resourceInfoList);

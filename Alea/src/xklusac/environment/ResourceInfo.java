@@ -231,6 +231,7 @@ public class ResourceInfo {
             for (int j = 0; j < resInExec.size(); j++) {
                 GridletInfo gi = (GridletInfo) resInExec.get(j);
                 if (gi.getStatus() != Gridlet.SUCCESS) {
+                //if (gi.getStatus() != Gridlet.SUCCESS && !gi.isSuspended()) {
                     freePE = freePE - gi.getNumPE();
                 }
             }

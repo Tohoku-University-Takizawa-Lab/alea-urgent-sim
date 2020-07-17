@@ -52,8 +52,8 @@ public class JobSwapper {
 	
 	public double swapin(GridletInfo gi, ResourceInfo ri) {
 		double delay = delayGen.genSwapinTime();
-		scheduler.submitJobWithDelay(gi.getGridlet(), ri.resource.getResourceID(), delay);
 		gi.setSuspended(false);
+		scheduler.submitJobWithDelay(gi.getGridlet(), ri.resource.getResourceID(), delay);
 		gi.getGridlet().addTotalSwapDelay(delay);
 		return delay;
 	}
