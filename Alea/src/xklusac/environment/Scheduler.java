@@ -912,7 +912,7 @@ public class Scheduler extends GridSim {
                     if (gridlet_received.getOnJobFail() != null) {
                         super.sim_schedule(this.getEntityId(gridlet_received.getOnJobFail()), 60, AleaSimTags.AGENT_ONJOBFAIL, gridlet_received);
                     }
-                } else if (gridlet_received.getGridletStatus() == Gridlet.CANCELED) {
+                } else if (gridlet_received.getGridletStatus() == Gridlet.CANCELED && !gridlet_received.isSuspended()) {
                     cpu_time = 0.0;
                     if (gridlet_received.getOnJobFail() != null) {
                         super.sim_schedule(this.getEntityId(gridlet_received.getOnJobFail()), 60, AleaSimTags.AGENT_ONJOBFAIL, gridlet_received);
