@@ -76,8 +76,10 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
 	                        	ri.removeGInfo(info);
 		                        // Put the preempted job into the earliest queue of regular jobs
 		                        int actual_idx = 0;
-		                        while (UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
-		                            actual_idx++;
+		                        if (ri.resSchedule.size() > 0) {
+			                        while (UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
+			                            actual_idx++;
+			                        }
 		                        }
 		                        ri.addGInfo(actual_idx, info);
 		                        System.out.format("- Put back preempted job %d to slot %d of resource %d:%s.\n",

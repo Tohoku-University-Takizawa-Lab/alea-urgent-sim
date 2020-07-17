@@ -108,8 +108,10 @@ public class PreemptiveUJF extends UJF {
 	                        	targetRi.removeGInfo(info);
 		                        // Put the preempted job into the earliest queue of regular jobs
 		                        int actual_idx = 0;
-		                        while (UrgentGridletUtil.isUrgent(targetRi.resSchedule.get(actual_idx))) {
-		                            actual_idx++;
+		                        if (targetRi.resSchedule.size() > 0) {
+			                        while (UrgentGridletUtil.isUrgent(targetRi.resSchedule.get(actual_idx))) {
+			                            actual_idx++;
+			                        }
 		                        }
 		                        targetRi.addGInfo(actual_idx, info);
 		                        System.out.format("- Put back preempted job %d to slot %d of resource %d:%s.\n",
