@@ -65,24 +65,27 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
                     while (toFree > 0 && visit < runInfos.size()) {
                         GridletInfo info = runInfos.get(visit);
 
-                        System.out.format("- Preempting job %s (PE=%d,Mem=%d) for urgent_job=%d (PE:%d), toFree=%d\n",
-                                info.getID(), info.getNumPE(), info.getRam(), gi.getID(), gi.getNumPE(), toFree);
-
-                        boolean swapped = jobSwapper.swapout(info, ri);
-                        
-                        if (swapped) {
-                        	ri.removeGInfo(info);
-	                        // Put the preempted job into the earliest queue of regular jobs
-	                        int actual_idx = 0;
-	                        while (UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
-	                            actual_idx++;
+                        // Preempt only regular jobs
+                        if (!UrgentGridletUtil.isUrgent(info)) {
+	                        System.out.format("- Preempting job %s (PE=%d,Mem=%d) for urgent_job=%d (PE:%d), toFree=%d\n",
+	                                info.getID(), info.getNumPE(), info.getRam(), gi.getID(), gi.getNumPE(), toFree);
+	
+	                        boolean swapped = jobSwapper.swapout(info, ri);
+	                        
+	                        if (swapped) {
+	                        	ri.removeGInfo(info);
+		                        // Put the preempted job into the earliest queue of regular jobs
+		                        int actual_idx = 0;
+		                        while (UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
+		                            actual_idx++;
+		                        }
+		                        ri.addGInfo(actual_idx, info);
+		                        System.out.format("- Put back preempted job %d to slot %d of resource %d:%s.\n",
+		                                info.getID(), actual_idx, ri.resource.getResourceID(), ri.resource.getResourceName());
 	                        }
-	                        ri.addGInfo(actual_idx, info);
-	                        System.out.format("- Put back preempted job %d to slot %d of resource %d:%s.\n",
-	                                info.getID(), actual_idx, ri.resource.getResourceID(), ri.resource.getResourceName());
+	
+	                        toFree -= info.getNumPE();
                         }
-
-                        toFree -= info.getNumPE();
                         visit++;
                      }
                      //Scheduler.updateResourceInfos(GridSim.clock());

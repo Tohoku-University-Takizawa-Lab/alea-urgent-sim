@@ -90,35 +90,38 @@ public class PreemptiveUJF extends UJF {
                     while (toFree > 0 && visit < runInfos.size()) {
                         GridletInfo info = runInfos.get(visit);
                         
-                        //System.out.format("- Preempting job %s (Mem=%d) for urgent_job=%d (PE:%d), toFree=%d\n",
-                        //       info.getID(), info.getRam(), gi.getID(), gi.getNumPE(), toFree);
-                        System.out.format("- Preempting job %s (PE=%d,Mem=%d) for urgent_job=%d (PE:%d), toFree=%d\n",
-                                info.getID(), info.getNumPE(), info.getRam(), gi.getID(), gi.getNumPE(), toFree);
-                        
-                        //targetRi.resInExec.remove(info);
-                        //targetRi.lowerResInExec(info);
-                        //scheduler.cancelJob(info.getGridlet(), targetRi.resource.getResourceID(), 0);
-                        //jobSwapper.swapout(info, targetRi);
-                        
-                        boolean swapped = jobSwapper.swapout(info, targetRi);
-                        
-                        if (swapped) {
-                        	targetRi.removeGInfo(info);
-	                        // Put the preempted job into the earliest queue of regular jobs
-	                        int actual_idx = 0;
-	                        while (UrgentGridletUtil.isUrgent(targetRi.resSchedule.get(actual_idx))) {
-	                            actual_idx++;
+                        // Preempt only regular jobs, to prevent cyclic
+                        if (!UrgentGridletUtil.isUrgent(info)) {
+	                        //System.out.format("- Preempting job %s (Mem=%d) for urgent_job=%d (PE:%d), toFree=%d\n",
+	                        //       info.getID(), info.getRam(), gi.getID(), gi.getNumPE(), toFree);
+	                        System.out.format("- Preempting job %s (PE=%d,Mem=%d) for urgent_job=%d (PE:%d), toFree=%d\n",
+	                                info.getID(), info.getNumPE(), info.getRam(), gi.getID(), gi.getNumPE(), toFree);
+	                        
+	                        //targetRi.resInExec.remove(info);
+	                        //targetRi.lowerResInExec(info);
+	                        //scheduler.cancelJob(info.getGridlet(), targetRi.resource.getResourceID(), 0);
+	                        //jobSwapper.swapout(info, targetRi);
+	                        
+	                        boolean swapped = jobSwapper.swapout(info, targetRi);
+	                        
+	                        if (swapped) {
+	                        	targetRi.removeGInfo(info);
+		                        // Put the preempted job into the earliest queue of regular jobs
+		                        int actual_idx = 0;
+		                        while (UrgentGridletUtil.isUrgent(targetRi.resSchedule.get(actual_idx))) {
+		                            actual_idx++;
+		                        }
+		                        targetRi.addGInfo(actual_idx, info);
+		                        System.out.format("- Put back preempted job %d to slot %d of resource %d:%s.\n",
+		                                info.getID(), actual_idx, targetRi.resource.getResourceID(), targetRi.resource.getResourceName());
 	                        }
-	                        targetRi.addGInfo(actual_idx, info);
-	                        System.out.format("- Put back preempted job %d to slot %d of resource %d:%s.\n",
-	                                info.getID(), actual_idx, targetRi.resource.getResourceID(), targetRi.resource.getResourceName());
+	                        
+	                        // Resubmit to the head of queue
+	                        //targetRi.addLastGInfo(info);
+	                        //targetRi.addGInfo(0, info);
+	                        
+	                        toFree -= info.getNumPE();
                         }
-                        
-                        // Resubmit to the head of queue
-                        //targetRi.addLastGInfo(info);
-                        //targetRi.addGInfo(0, info);
-                        
-                        toFree -= info.getNumPE();
                         visit++;
                         
                     }
