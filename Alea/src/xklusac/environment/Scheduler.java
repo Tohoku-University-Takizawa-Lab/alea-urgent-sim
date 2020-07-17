@@ -1108,7 +1108,9 @@ public class Scheduler extends GridSim {
         }
 
         // all jobs were received
-        if (end_of_submission && received == in_job_counter) {
+        //if (end_of_submission && received == in_job_counter) {
+        // Due to suspended jobs, received can be higher than in_job_counter
+        if (end_of_submission && getScheduleSize() == 0) {
             // final update of FairShare
             updateFairShare();
             // turn off the JobLoader

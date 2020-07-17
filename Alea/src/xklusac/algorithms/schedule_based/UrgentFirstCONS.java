@@ -104,8 +104,8 @@ public class UrgentFirstCONS extends CONS {
                   actual_idx++;
               }
               ri.addGInfo(actual_idx, gi);
-              System.out.format("- Moved urgent job %d to slot %d of resource %d.\n",
-                      gi.getID(), actual_idx, ri.resource.getResourceID());
+              System.out.format("- Moved urgent job %d to slot %d of resource %d:%s.\n",
+                      gi.getID(), actual_idx, ri.resource.getResourceID(), ri.resource.getResourceName());
         }
         else {
             // mark job as backfilled if it is not at the end of schedule

@@ -110,8 +110,8 @@ public class PreemptiveUJF extends UJF {
 	                            actual_idx++;
 	                        }
 	                        targetRi.addGInfo(actual_idx, info);
-	                        System.out.format("- Put preempted job %d to slot %d of resource %d.\n",
-	                                info.getID(), actual_idx, targetRi.resource.getResourceID());
+	                        System.out.format("- Put back preempted job %d to slot %d of resource %d:%s.\n",
+	                                info.getID(), actual_idx, targetRi.resource.getResourceID(), targetRi.resource.getResourceName());
                         }
                         
                         // Resubmit to the head of queue

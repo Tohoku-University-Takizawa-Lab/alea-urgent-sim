@@ -78,8 +78,8 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
 	                            actual_idx++;
 	                        }
 	                        ri.addGInfo(actual_idx, info);
-	                        System.out.format("- Put preempted job %d to slot %d of resource %d.\n",
-	                                info.getID(), actual_idx, ri.resource.getResourceID());
+	                        System.out.format("- Put back preempted job %d to slot %d of resource %d:%s.\n",
+	                                info.getID(), actual_idx, ri.resource.getResourceID(), ri.resource.getResourceName());
                         }
 
                         toFree -= info.getNumPE();
