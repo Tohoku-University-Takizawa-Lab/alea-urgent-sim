@@ -92,6 +92,7 @@ public class ResultCollector {
      */
     private int success;
     private int backfilled;
+    private int suspend;
     double succ_flow = 0.0;
     double succ_wait = 0.0;
     double succ_slow = 0.0;
@@ -234,9 +235,10 @@ public class ResultCollector {
         double b_succ_slow = 0.0;
         int backfilled = 0;
         int backfilled_cons = 0;
+        int num_suspends = 0;
         double[] pluginsValues = new double[plugins.size()];
 
-        for (int i = 0; i < results.size(); i = i + 20 + plugins.size()) {
+        for (int i = 0; i < results.size(); i = i + 21 + plugins.size()) {
 
             // deadline score
             completed_jobs += (Integer) results.get(i);
@@ -272,9 +274,10 @@ public class ResultCollector {
             b_succ_slow += (Double) results.get(i + 17);
             backfilled += (Integer) results.get(i + 18);
             backfilled_cons += (Integer) results.get(i + 19);
+            num_suspends += (Integer) results.get(i+20);
 
             for (int j = 0; j < plugins.size(); j++) {
-                pluginsValues[j] += (Double) results.get(i + j + 20);
+                pluginsValues[j] += (Double) results.get(i + j + 21);
             }
         }
         // print results (deadline score and scheduling time and makespan)
@@ -390,11 +393,11 @@ public class ResultCollector {
             this.pw = new PrintWriter(new FileWriter(FileUtil.getPath(output_name)), true);
 
             //this.pw = new PrintWriter(new FileWriter(output_name, true));
-            this.pw2 = new PrintWriter(new FileWriter(FileUtil.getPath(user_dir + "/jobs(" + problem + "" + ExperimentSetup.algID + ").csv"), true));
-            this.pwc = new PrintWriter(new FileWriter(FileUtil.getPath(user_dir + "/complain(" + problem + "" + ExperimentSetup.algID + ").csv"), true));
-            this.pwt = new PrintWriter(new FileWriter(FileUtil.getPath(user_dir + "/throughput(" + problem + "" + ExperimentSetup.algID + ").csv"), true));
+            this.pw2 = new PrintWriter(new FileWriter(FileUtil.getPath(user_dir + "/jobs(" + problem + "" + ExperimentSetup.algID + ").csv")), true);
+            this.pwc = new PrintWriter(new FileWriter(FileUtil.getPath(user_dir + "/complain(" + problem + "" + ExperimentSetup.algID + ").csv")), true);
+            this.pwt = new PrintWriter(new FileWriter(FileUtil.getPath(user_dir + "/throughput(" + problem + "" + ExperimentSetup.algID + ").csv")), true);
 
-            out.writeStringWriter(pw, "giID \t arrival \t wait \t runtime \t CPUs \t RAM \t userID \t queue \t walltime_limit");
+            out.writeStringWriter(pw, "giID \t arrival \t wait \t runtime \t CPUs \t RAM \t userID \t queue \t walltime_limit \t urgency \t nPreempted");
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -419,15 +422,31 @@ public class ResultCollector {
             arrival = gi.getGridlet().getArrival_time();
             System.out.println(gi.getID() + " returned failed, time = " + GridSim.clock());
 
-        } else if (gridlet_received.getGridletStatus() == Gridlet.CANCELED) {
+        } else if (gridlet_received.isSuspended() && gridlet_received.getGridletStatus() == Gridlet.CANCELED) {
+        	suspend++;
+        	System.out.println(gi.getID() + " suspended, time = " + GridSim.clock());
+        	// Return s.t. it does not update the statistics since this job will execute again
+        	// But, it cannot return immediately because the resource must be updated for next execution
+
+        	for (int j = 0; j < resourceInfoList.size(); j++) {
+                ResourceInfo ri = (ResourceInfo) resourceInfoList.get(j);
+                if (gridlet_received.getResourceID() == ri.resource.getResourceID()) {
+                    // we lower the load of resource
+                    ri.lowerResInExec(gi);
+                    break;
+                }
+            }
+        	return;
+    	} 
+        else if (gridlet_received.getGridletStatus() == Gridlet.CANCELED) {
             failed++;
             finish_time = GridSim.clock();
             cpu_time = 0.0;
             arrival = gi.getGridlet().getArrival_time();
             mips = 0.0;
             System.out.println(gi.getID() + " returned canceled, time = " + GridSim.clock());
-
-        } else {
+        }
+        else {
             success++;
             finish_time = gi.getGridlet().getFinishTime();
             cpu_time = gi.getGridlet().getActualCPUTime();
@@ -497,8 +516,11 @@ public class ResultCollector {
                 prob += "_stradani";
             }
 
-            String line = gridlet_received.getGridletID() + "\t" + Math.round(gi.getRelease_date()) + "\t" + Math.round(Math.max(0.0, (response - cpu_time)) * 10) / 10.0
-                    + "\t" + Math.round(cpu_time * 10) / 10.0 + "\t" + gi.getNumPE() + "\t" + gi.getRam() + "\t" + gi.getUser() + "\t" + gi.getQueue() + "\t" + gi.getJobLimit();
+            String line = gridlet_received.getGridletID() + "\t" + Math.round(gi.getRelease_date()) + "\t" 
+            		+ Math.round(Math.max(0.0, (response - cpu_time)) * 10) / 10.0
+                    + "\t" + Math.round(cpu_time * 10) / 10.0 + "\t" + gi.getNumPE() + "\t" + gi.getRam() 
+                    + "\t" + gi.getUser() + "\t" + gi.getQueue() + "\t" + gi.getJobLimit() + "\t" + gi.getUrgency() 
+                    +"\t" + gi.getGridlet().getNumPreempted();
 
             //out.writeStringWriter(user_dir + "/jobs" + prob + ".csv", line.replace(".", ","));
             out.writeStringWriter(pw, line.replace(".", ","));
@@ -578,6 +600,7 @@ public class ResultCollector {
         backfilled = ExperimentSetup.backfilled;
         results.add(backfilled);
         results.add(ExperimentSetup.backfilled_cons);
+        results.add(suspend);
 
         //iterates all plugins and calculate their values and add them into results list
         for (Plugin pl : plugins) {
@@ -594,6 +617,7 @@ public class ResultCollector {
     public void reset() {
         this.success = 0;
         this.failed = 0;
+        this.suspend = 0;
         this.received = 0;
         this.job_time = 0.0;
         this.wjob_time = 0.0;
@@ -758,7 +782,8 @@ public class ResultCollector {
 
         // delete job trace after each experiment
         try {
-            out.deleteResults(user_dir + "/jobs(" + problem + "" + ExperimentSetup.algID + ").csv");
+            //out.deleteResults(user_dir + "/jobs(" + problem + "" + ExperimentSetup.algID + ").csv");
+            out.deleteResultsFile(user_dir + "/jobs(" + problem + "" + ExperimentSetup.algID + ").csv");
         } catch (IOException ex) {
             ex.printStackTrace();
         }

@@ -66,6 +66,8 @@ public class ComplexGridlet extends Gridlet {
     private int urgency;
     private int numPreempted;
     private double totalSwapDelay;
+	// Flag if it is suspended
+    private boolean suspended;
 
     private String onJobStart = null;
     private String onJobCompl = null;
@@ -139,6 +141,7 @@ public class ComplexGridlet extends Gridlet {
         this.setUrgency(0);
         this.setNumPreempted(0);
         this.setTotalSwapDelay(0.0);
+        this.setSuspended(false);
     }
     
     public ComplexGridlet(int gridletID, String user, long job_limit, double gridletLength, double estimatedLength, long gridletFileSize,
@@ -421,5 +424,14 @@ public class ComplexGridlet extends Gridlet {
 	public void addTotalSwapDelay(double delay) {
 		this.totalSwapDelay += delay;
 	}
+
+	public boolean isSuspended() {
+		return suspended;
+	}
+
+	public void setSuspended(boolean suspended) {
+		this.suspended = suspended;
+	}
+	
 
 }

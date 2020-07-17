@@ -67,6 +67,13 @@ public class Output{
         pw.close();
     }
     
+    public void deleteResultsFile(String filename) throws IOException {
+    	String path = FileUtil.getPath(filename);
+    	File file = new File(path);
+    	file.delete();
+    	System.out.println("File " + filename + " has been deleted.");
+    }
+    
     public void closeWriter(PrintWriter pw)
     throws IOException {
         //System.out.println("Closing writer... ");

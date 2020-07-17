@@ -68,7 +68,19 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
                         System.out.format("- Preempting job %s (PE=%d,Mem=%d) for urgent_job=%d (PE:%d), toFree=%d\n",
                                 info.getID(), info.getNumPE(), info.getRam(), gi.getID(), gi.getNumPE(), toFree);
 
-                        jobSwapper.swapout(info, ri);
+                        boolean swapped = jobSwapper.swapout(info, ri);
+                        
+                        if (swapped) {
+                        	ri.removeGInfo(info);
+	                        // Put the preempted job into the earliest queue of regular jobs
+	                        int actual_idx = 0;
+	                        while (UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
+	                            actual_idx++;
+	                        }
+	                        ri.addGInfo(actual_idx, info);
+	                        System.out.format("- Put preempted job %d to slot %d of resource %d.\n",
+	                                info.getID(), actual_idx, ri.resource.getResourceID());
+                        }
 
                         toFree -= info.getNumPE();
                         visit++;

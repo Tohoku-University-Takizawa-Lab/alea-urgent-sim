@@ -21,7 +21,7 @@ public class JobSwapper {
 		this.delayGen = gen;
 	}
 	
-	public double swapout(GridletInfo gi, ResourceInfo ri) {
+	public boolean swapout(GridletInfo gi, ResourceInfo ri) {
 		double delay = delayGen.genSwapoutTime();
 		// Emulating the swapping time with GridSim delay
 		// 1. Pause no delay
@@ -29,17 +29,25 @@ public class JobSwapper {
 		// 3. Cancel no delay
 		//scheduler.pauseJob(gi.getGridlet(), ri.resource.getResourceID(), 0);
 		//scheduler.resumeJob(gi.getGridlet(), ri.resource.getResourceID(), delay);
+		gi.setSuspended(true);
+		//gi.getGridlet().setSuspended(true);
+		
 		scheduler.cancelJob(gi.getGridlet(), ri.resource.getResourceID(), delay);
 		
+		boolean swapped = (gi.getGridlet().getGridletStatus() == Gridlet.CANCELED);
 		// Put the preempted job on the head of queue if it is canceled successfully
-		if (gi.getGridlet().getGridletStatus() == Gridlet.CANCELED) {
-			ri.addGInfo(0, gi);
-		
-			gi.setSuspended(true);
+		if (swapped) {
+			//ri.removeGInfo(gi);
+			//ri.addGInfo(0, gi); // Handle by the scheduling algorithm
+			
 			gi.getGridlet().addTotalSwapDelay(delay);
 			gi.getGridlet().addNumPreempted(1);
 		}
-		return delay;
+		else {
+			// Finished before it is canceled.
+			gi.setSuspended(false);
+		}
+		return swapped;
 	}
 	
 	public double swapin(GridletInfo gi, ResourceInfo ri) {

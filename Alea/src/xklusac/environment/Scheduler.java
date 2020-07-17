@@ -717,8 +717,12 @@ public class Scheduler extends GridSim {
         //super.sim_schedule(this.getEntityId(this.getEntityName()), fairdelay + 2, AleaSimTags.SCHEDULER_PRINT_FIRST_JOB_IN_QUEUE);
 
         // Accept events until the simulation is finished
-        while (!end_of_submission || received < in_job_counter) {
+        //while (!end_of_submission || received < in_job_counter) {
+        // Make sure no suspended jobs by monitoring the schedule size
+        //while (!end_of_submission || received < in_job_counter || getScheduleSize() > 0) {
+        while (!end_of_submission || getScheduleSize() > 0) {
 
+        	//int currSchedSize = getScheduleSize();
             Sim_event ev = new Sim_event();
             sim_get_next(ev);
 

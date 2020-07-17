@@ -98,7 +98,21 @@ public class PreemptiveUJF extends UJF {
                         //targetRi.resInExec.remove(info);
                         //targetRi.lowerResInExec(info);
                         //scheduler.cancelJob(info.getGridlet(), targetRi.resource.getResourceID(), 0);
-                        jobSwapper.swapout(info, targetRi);
+                        //jobSwapper.swapout(info, targetRi);
+                        
+                        boolean swapped = jobSwapper.swapout(info, targetRi);
+                        
+                        if (swapped) {
+                        	targetRi.removeGInfo(info);
+	                        // Put the preempted job into the earliest queue of regular jobs
+	                        int actual_idx = 0;
+	                        while (UrgentGridletUtil.isUrgent(targetRi.resSchedule.get(actual_idx))) {
+	                            actual_idx++;
+	                        }
+	                        targetRi.addGInfo(actual_idx, info);
+	                        System.out.format("- Put preempted job %d to slot %d of resource %d.\n",
+	                                info.getID(), actual_idx, targetRi.resource.getResourceID());
+                        }
                         
                         // Resubmit to the head of queue
                         //targetRi.addLastGInfo(info);

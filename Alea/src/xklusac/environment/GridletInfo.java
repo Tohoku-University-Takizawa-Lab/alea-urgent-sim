@@ -128,7 +128,6 @@ public class GridletInfo {
     private int numNodes;
     private int ppn;
     private int urgency;
-    private boolean suspended;
 
     private HashMap<Integer, Boolean> resourceSuitable;
 
@@ -173,7 +172,7 @@ public class GridletInfo {
         this.setResourceSuitable(new HashMap());
         this.setExpectedWaitTime(this.getExpectedWaitTime());
         this.setUrgency(gl.getUrgency());
-        this.setSuspended(false);
+        //this.setSuspended(gl.isSuspended());	// this flag is stored in the GridLet
     }
 
     /**
@@ -749,11 +748,11 @@ public class GridletInfo {
     }
 
 	public boolean isSuspended() {
-		return suspended;
+		return getGridlet().isSuspended();
 	}
 
 	public void setSuspended(boolean suspended) {
-		this.suspended = suspended;
+		getGridlet().setSuspended(suspended);
 	}
 
 }
