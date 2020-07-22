@@ -59,6 +59,20 @@ public class Input {
             }
         }
     }
+    
+    public void  getLinesSkipComments(LinkedList<String> list, BufferedReader br){
+		try {
+			String line = br.readLine();
+			while (line != null) {
+				if (!line.startsWith("#"))
+					list.add(line);
+				line = br.readLine();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+    
     public void  getLinesOrdered(LinkedList list, BufferedReader br){
         String end = "";
         String line_count = "0";

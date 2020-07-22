@@ -73,7 +73,8 @@ public class MachineLoader {
 
         br = r.openFile(new File(ExperimentSetup.data_sets + "/" + data_set + ".machines"));
         System.out.println("Opening: " + ExperimentSetup.data_sets + "/" + data_set + ".machines");
-        r.getLines(lines, br);
+        //r.getLines(lines, br);
+        r.getLinesSkipComments(lines, br);
         r.closeFile(br);
         int name_id = 0;
         int max = 0;

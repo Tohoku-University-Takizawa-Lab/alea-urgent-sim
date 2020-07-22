@@ -397,7 +397,8 @@ public class ResultCollector {
             this.pwc = new PrintWriter(new FileWriter(FileUtil.getPath(user_dir + "/complain(" + problem + "" + ExperimentSetup.algID + ").csv")), true);
             this.pwt = new PrintWriter(new FileWriter(FileUtil.getPath(user_dir + "/throughput(" + problem + "" + ExperimentSetup.algID + ").csv")), true);
 
-            out.writeStringWriter(pw, "giID \t arrival \t wait \t runtime \t CPUs \t RAM \t userID \t queue \t walltime_limit \t urgency \t nPreempted");
+            //out.writeStringWriter(pw, "giID \t arrival \t wait \t runtime \t CPUs \t RAM \t userID \t queue \t walltime_limit \t urgency \t nPreempted");
+            out.writeStringWriter(pw, "giID\tarrival\twait\truntime\tCPUs\tRAM\tuserID\tqueue\twalltime_limit\turgency\tnPreempted");
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -524,7 +525,9 @@ public class ResultCollector {
                     +"\t" + gi.getGridlet().getNumPreempted();
 
             //out.writeStringWriter(user_dir + "/jobs" + prob + ".csv", line.replace(".", ","));
-            out.writeStringWriter(pw, line.replace(".", ","));
+            // Write in format used in many non-English countries
+            //out.writeStringWriter(pw, line.replace(".", ","));
+            out.writeStringWriter(pw, line);
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -848,7 +851,8 @@ public class ResultCollector {
             factor = Math.round(factor * 1000) / 1000.0;
             String output = gid + "\t" + Math.round(time) + "\t" + userID + "\t" + user + "\t" + factor + "\t" + job_count;
             // giID - time - userID - user - factor - job count
-            out.writeStringWriterErr(pwc, output.replace(".", ","));
+            //out.writeStringWriterErr(pwc, output.replace(".", ","));
+            out.writeStringWriterErr(pwc, output);
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -859,7 +863,8 @@ public class ResultCollector {
         try {
             String th = Math.round(time / (3600 * 24)) + "\t" + job_count;
             // time - finished job count
-            out.writeStringWriterErr(pwt, th.replace(".", ","));
+            //out.writeStringWriterErr(pwt, th.replace(".", ","));
+            out.writeStringWriterErr(pwt, th);
 
         } catch (IOException ex) {
             ex.printStackTrace();
