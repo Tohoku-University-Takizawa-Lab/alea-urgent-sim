@@ -702,7 +702,7 @@ public class Scheduler extends GridSim {
         super.sim_schedule(this.getEntityId(data_set + "_JobLoader"), 5.0, AleaSimTags.EVENT_WAKE);
 
         // start periodic print of queue data
-        //super.sim_schedule(this.getEntityId(this.getEntityName()), 0.0, AleaSimTags.LOG_SCHEDULER);
+        super.sim_schedule(this.getEntityId(this.getEntityName()), 0.0, AleaSimTags.LOG_SCHEDULER);
         // periodic logging of current throughput (# of jobs completed so far)
         super.sim_schedule(this.getEntityId(this.getEntityName()), 3600 * 24, AleaSimTags.SCHEDULER_PRINT_THROUGHPUT);
         //super.sim_schedule(this.getEntityId(this.getEntityName()), 0.0, AleaSimTags.SCHEDULER_PRINT_SCHEDULE);
@@ -796,8 +796,11 @@ public class Scheduler extends GridSim {
                     idd += queue.getLast().getID();
                 }
                 //System.out.println(">>> " + in_job_counter + " so far arrived, in queue = " + getQueueSize() + " jobs, at time = " + Math.round(clock())+" running = "+getRunningJobs()+" FREE = "+getFreeCPUs()+" last jobID = "+idd);
-                System.out.println(in_job_counter + " arrived, waiting = " + getScheduleSize() + " simtime = " + Math.round(clock()) + " running = " + getRunningJobs() + " FREE = " + getFreeCPUs() + " last jobID = " + last_job_id);
-                super.sim_schedule(this.getEntityId(this.getEntityName()), (3 * 3600.0), AleaSimTags.LOG_SCHEDULER);
+                //System.out.println(in_job_counter + " arrived, waiting = " + getScheduleSize() + " simtime = " + Math.round(clock()) + " running = " + getRunningJobs() + " FREE = " + getFreeCPUs() + " last jobID = " + last_job_id);
+                ExperimentSetup.result_collector.doLoggers(resourceInfoList, null);
+                //super.sim_schedule(this.getEntityId(this.getEntityName()), (3 * 3600.0), AleaSimTags.LOG_SCHEDULER);
+                // Invoke logger hourly
+                super.sim_schedule(this.getEntityId(this.getEntityName()), 3600.0, AleaSimTags.LOG_SCHEDULER);
                 continue;
             }
 

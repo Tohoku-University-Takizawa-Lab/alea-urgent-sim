@@ -6,6 +6,7 @@ import xklusac.algorithms.schedule_based.optimization.TabuSearch;
 import xklusac.algorithms.schedule_based.optimization.RandomSearch;
 import xklusac.algorithms.schedule_based.optimization.WeightedRandomSearch;
 import xklusac.algorithms.schedule_based.CONS;
+import xklusac.algorithms.schedule_based.FairshareCONS;
 import xklusac.algorithms.queue_based.multi_queue.EASY_Backfilling;
 import xklusac.algorithms.queue_based.multi_queue.AggressiveBackfilling;
 import xklusac.algorithms.queue_based.multi_queue.FairshareMetaBackfilling;
@@ -38,6 +39,8 @@ import agung.algorithms.urgent.UrgentFirstCONS;
 import agung.extensions.urgent.ConstantSwapTime;
 import agung.extensions.urgent.RandomSwapTime;
 import agung.extensions.urgent.SwapTimeGen;
+import agung.plugins.logger.JobResourceInfoLogger;
+import agung.plugins.logger.InfoLoggerFactory;
 import xklusac.extensions.*;
 import xklusac.extensions.Queue;
 import xklusac.algorithms.*;
@@ -63,6 +66,7 @@ import xklusac.plugins.PluginFactory;
  * the latest GridSim should be used.
  *
  * @author Dalibor Klusacek
+ * @author Mulya Agung
  */
 public class ExperimentSetup {
     
@@ -627,6 +631,19 @@ public class ExperimentSetup {
             pluginConfigurations.add(plugincfg);      
         }
         
+        // Load logger plugins
+        String[] logPluginsString = aCfg.getStringArray(AleaConfiguration.LOG_PLUGINS_PREFIX);
+        List<Map<String, String>> logPluginConfigurations = new ArrayList<Map<String, String>>();
+        //String[] logPluginHeaders = new String[logPluginsString.length];
+        
+        for (int i=0; i<logPluginsString.length; i++) {
+            Map<String, String> plugincfg = aCfg.getLogPluginConfiguration(i);
+            //String header = plugincfg.get(PluginConfiguration.RESULT_HEADER);
+            //pluginHeaders[i] = header;
+            logPluginConfigurations.add(plugincfg);      
+        }
+        
+        
         // this cycle selects data set from data_sets[] list
         for (int set = 0; set < data_sets.length; set++) {
             //creates new folder for each data set in the new setup folder
@@ -808,7 +825,7 @@ public class ExperimentSetup {
                     }
                 }
                 if (alg == 9) {
-                    policy = new UrgentCONS(scheduler);
+                    policy = new FairshareCONS(scheduler);
                     // Conservative backfilling with fairshare (no RAM support)
                     use_compresion = true;
                     suff = "FairShareCONS+compr.";
@@ -1011,6 +1028,18 @@ public class ExperimentSetup {
                         plugins.add(pl);
                     }
                     result_collector.setPlugins(plugins);
+                    
+                    List<JobResourceInfoLogger> logPlugins = new ArrayList<JobResourceInfoLogger>();
+                    for (int i = 0; i< logPluginsString.length; i++) {
+                        String logPluginString = logPluginsString[i];
+                        if (!logPluginString.contains(".")) {
+                            logPluginString = "agung.plugins.logger." + logPluginString;
+                        }
+                        JobResourceInfoLogger infoLogger = InfoLoggerFactory.createLogger(logPluginString);
+                        infoLogger.init(logPluginConfigurations.get(i));
+                        logPlugins.add(infoLogger);
+                    }
+                    result_collector.setLogPlugins(logPlugins);
                     
                     avail_RAM = 0;
                     avail_CPUs = 0;

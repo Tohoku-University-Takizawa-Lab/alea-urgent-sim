@@ -23,11 +23,14 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import agung.plugins.logger.JobResourceInfoLogger;
+
 /**
  * Class ResultCollector<p>
  * This class stores results into csv file(s) and graphs (future work).
  *
  * @author Dalibor Klusacek
+ * @author Mulya Agung
  */
 public class ResultCollector {
 
@@ -116,6 +119,7 @@ public class ResultCollector {
     private String user_dir = "";
 
     private List<Plugin> plugins = new ArrayList<Plugin>();
+    private List<JobResourceInfoLogger> logPlugins = new ArrayList<JobResourceInfoLogger>();
 
     /**
      * Creates a new instance of ResultCollector
@@ -870,4 +874,31 @@ public class ResultCollector {
             ex.printStackTrace();
         }
     }
+    
+    
+    public void setLogPlugins(List<JobResourceInfoLogger> logPlugins) {
+		this.logPlugins = logPlugins;
+	}
+
+	public void doLoggers(List<ResourceInfo> infos, ComplexGridlet gl) {
+		if (!infos.isEmpty()) {
+	    	for (JobResourceInfoLogger logger: logPlugins) {
+	    		logger.logResources(GridSim.clock(), infos);
+	    	}
+		}
+		
+		if (gl != null) {
+			for (JobResourceInfoLogger logger: logPlugins) {
+				logger.logJob(GridSim.clock(), gl);
+	    	}
+		}
+		
+    }
+	
+	public void closeLoggers() {
+		for (JobResourceInfoLogger logger: logPlugins) {
+			logger.close();
+		}
+	}
+    
 }

@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import xklusac.plugins.PluginConfiguration;
 
 /**
  * This class provides access to property files. These files hold the
@@ -26,6 +25,7 @@ import xklusac.plugins.PluginConfiguration;
  * items.
  *
  * @author Gabriela Podolnikova
+ * @author Agung
  */
 public class AleaConfiguration {
 
@@ -33,6 +33,9 @@ public class AleaConfiguration {
     public static final String HEADER = "HEADER";
     public static final String PLUGINS = "plugins";
     public static final String PLUGIN = "plugin.";
+    public static final String LOG_PLUGINS_PREFIX = "logplugins";
+    public static final String LOG_PLUGIN_PREFIX = "logplugin.";
+    
     private /*static*/ final Properties props = new Properties();
     private final String fileName;
     private final InputStreamProvider inputStreamProvider;
@@ -85,11 +88,13 @@ public class AleaConfiguration {
      *
      * @return map with the plugin configuration
      */
-    public Map<String, String> getPluginConfiguration(int pluginIndex) {
+    public Map<String, String> getPluginConfiguration(int pluginIndex, String prefix) {
         Map<String, String> plugincfg = new HashMap<String, String>();
         String key;
-        String startOfKey = PLUGIN + pluginIndex + ".";
+        //String startOfKey = PLUGIN + pluginIndex + ".";
+        String startOfKey = prefix + pluginIndex + ".";
         int index = startOfKey.length();
+        
         List<String> keyList = new ArrayList<String>();
         try {
             keyList = this.getKeyList();
@@ -104,6 +109,14 @@ public class AleaConfiguration {
         }
         return plugincfg;
     }
+    
+    public Map<String, String> getPluginConfiguration(int pluginIndex) {
+    	return getPluginConfiguration(pluginIndex, LOG_PLUGINS_PREFIX);
+    }
+    
+    public Map<String, String> getLogPluginConfiguration(int pluginIndex) {
+    	return getPluginConfiguration(pluginIndex, LOG_PLUGIN_PREFIX);
+    }
 
     /**
      * Returns the key for a plugin in the configuration file.
@@ -114,13 +127,21 @@ public class AleaConfiguration {
      *
      * @return plugin key
      */
-    public static String getPluginConfigurationKey(int index, String pluginKey, boolean common) {
+    public static String getPluginConfigurationKey(int index, String pluginKey, boolean common, String prefix) {
         if (common) {
-            return PLUGIN + pluginKey;
+            return prefix + pluginKey;
         } else {
-            return PLUGIN + index + "." + pluginKey;
+            return prefix + index + "." + pluginKey;
         }
     }
+    
+    public static String getPluginConfigurationKey(int index, String pluginKey, boolean common) {
+       return getPluginConfigurationKey(index, pluginKey, common, PLUGIN);
+    }
+    
+    public static String getLogPluginConfigurationKey(int index, String pluginKey, boolean common) {
+        return getPluginConfigurationKey(index, pluginKey, common, LOG_PLUGIN_PREFIX);
+     }
 
     public File getFile() {
         File f = new File(getFileName());
