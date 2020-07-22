@@ -3,10 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package xklusac.environment;
+package agung.extensions.urgent;
 
 import java.util.Comparator;
 import java.util.List;
+
+import xklusac.environment.ComplexGridlet;
+import xklusac.environment.GridletInfo;
+import xklusac.environment.ResourceInfo;
 
 /**
  * Utility for urgent jobs

@@ -2,13 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package xklusac.algorithms.queue_based;
+package agung.algorithms.urgent;
 
 import java.util.Date;
+
+import agung.extensions.urgent.UrgentGridletUtil;
+
 import java.util.Collections;
+
+import xklusac.algorithms.queue_based.SJF;
 import xklusac.environment.GridletInfo;
 import xklusac.environment.Scheduler;
-import xklusac.environment.UrgentGridletUtil;
 
 /**
  * Class UJF<p>(Urgent Job First)

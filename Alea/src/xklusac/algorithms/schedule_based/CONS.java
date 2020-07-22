@@ -27,7 +27,7 @@ public class CONS implements SchedulingPolicy {
 
     //private Scheduler scheduler;
     protected Scheduler scheduler;
-    Schedule_Visualizator anim = null;
+    protected Schedule_Visualizator anim = null;
 
     public CONS(Scheduler scheduler) {
         this.scheduler = scheduler;

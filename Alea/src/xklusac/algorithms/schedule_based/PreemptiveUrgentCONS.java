@@ -7,11 +7,11 @@ package xklusac.algorithms.schedule_based;
 import java.util.Collections;
 import java.util.List;
 
+import agung.extensions.urgent.UrgentGridletUtil;
 import xklusac.environment.GridletInfo;
 import xklusac.environment.JobSwapper;
 import xklusac.environment.ResourceInfo;
 import xklusac.environment.Scheduler;
-import xklusac.environment.UrgentGridletUtil;
 
 /**
  * Class PreemptiveUrgentCons<p> extends CONS (Conservative Backfilling).

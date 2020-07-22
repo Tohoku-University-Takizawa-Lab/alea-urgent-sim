@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package xklusac.plugins;
+package agung.plugins.urgent;
 
+import agung.extensions.urgent.UrgentGridletUtil;
 import xklusac.environment.ComplexGridlet;
-import xklusac.environment.UrgentGridletUtil;
+import xklusac.plugins.AverageSlowdownPlugin;
 
 /**
  *

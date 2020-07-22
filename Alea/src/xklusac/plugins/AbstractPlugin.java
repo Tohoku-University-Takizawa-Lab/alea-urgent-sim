@@ -8,7 +8,7 @@ import java.util.Map;
  * 
  * @author Gabriela Podolnikova
  */
-abstract class AbstractPlugin implements Plugin {
+public abstract class AbstractPlugin implements Plugin {
     
     
     private Map<String, String> pluginConfiguration;

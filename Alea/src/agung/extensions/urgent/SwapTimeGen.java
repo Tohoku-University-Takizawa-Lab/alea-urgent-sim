@@ -1,4 +1,4 @@
-package xklusac.environment;
+package agung.extensions.urgent;
 
 /**
  * Interface of swapping time generator.

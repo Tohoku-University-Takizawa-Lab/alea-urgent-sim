@@ -3,17 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package xklusac.plugins;
+package agung.plugins.urgent;
 
+import agung.extensions.urgent.UrgentGridletUtil;
 import xklusac.environment.ComplexGridlet;
-import xklusac.environment.UrgentGridletUtil;
+import xklusac.plugins.AverageSlowdownPlugin;
 
 /**
  *
  * @author agung
  */
-public class UrgentAvgWaitTimePlugin extends AverageWaitTimePlugin {
-    
+public class UrgentAvgSlowdownPlugin extends AverageSlowdownPlugin {
+
     @Override
     public void cumulate(ComplexGridlet gridletReceived) {
         if (UrgentGridletUtil.isUrgent(gridletReceived)) {
@@ -21,8 +22,10 @@ public class UrgentAvgWaitTimePlugin extends AverageWaitTimePlugin {
             double cpu_time = gridletReceived.getActualCPUTime();
             double arrival = gridletReceived.getArrival_time();
             double response = Math.max(0.0, (finish_time - arrival));
-            waitTime += Math.max(0.0, (response - cpu_time));
+            slowdown += Math.max(1.0, (response / Math.max(1.0, cpu_time)));
         }
     }
+    
+    
     
 }

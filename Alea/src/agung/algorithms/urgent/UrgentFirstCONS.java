@@ -2,17 +2,20 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package xklusac.algorithms.schedule_based;
+package agung.algorithms.urgent;
 
 import java.util.Date;
+
+import agung.extensions.urgent.UrgentGridletUtil;
 import gridsim.GridSim;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import xklusac.algorithms.schedule_based.CONS;
 import xklusac.environment.ExperimentSetup;
 import xklusac.environment.GridletInfo;
 import xklusac.environment.ResourceInfo;
 import xklusac.environment.Scheduler;
-import xklusac.environment.UrgentGridletUtil;
 import xklusac.extensions.EndTimeComparator;
 import xklusac.extensions.SchedulingEvent;
 
