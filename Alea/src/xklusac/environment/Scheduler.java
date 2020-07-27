@@ -797,7 +797,7 @@ public class Scheduler extends GridSim {
                 }
                 //System.out.println(">>> " + in_job_counter + " so far arrived, in queue = " + getQueueSize() + " jobs, at time = " + Math.round(clock())+" running = "+getRunningJobs()+" FREE = "+getFreeCPUs()+" last jobID = "+idd);
                 //System.out.println(in_job_counter + " arrived, waiting = " + getScheduleSize() + " simtime = " + Math.round(clock()) + " running = " + getRunningJobs() + " FREE = " + getFreeCPUs() + " last jobID = " + last_job_id);
-                ExperimentSetup.result_collector.doLoggers(resourceInfoList, null);
+                ExperimentSetup.result_collector.doLoggers(resourceInfoList, getQueueSize(), null);
                 //super.sim_schedule(this.getEntityId(this.getEntityName()), (3 * 3600.0), AleaSimTags.LOG_SCHEDULER);
                 // Invoke logger hourly
                 super.sim_schedule(this.getEntityId(this.getEntityName()), 3600.0, AleaSimTags.LOG_SCHEDULER);

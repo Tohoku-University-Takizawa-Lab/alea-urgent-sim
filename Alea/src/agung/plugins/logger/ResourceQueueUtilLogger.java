@@ -9,7 +9,7 @@ import java.util.Map;
 import xklusac.environment.ComplexGridlet;
 import xklusac.environment.ResourceInfo;
 
-public class ResourceUtilizationLogger implements JobResourceInfoLogger {
+public class ResourceQueueUtilLogger implements JobResourceInfoLogger {
 	
 	private FileWriter outputWriter;
 	
@@ -21,7 +21,7 @@ public class ResourceUtilizationLogger implements JobResourceInfoLogger {
 		try {
 			outputWriter = new FileWriter(outputFile);
 			// Print header
-			outputWriter.append("hour,resourceID,numBusyPE,numFreePE\n");
+			outputWriter.append("hour,numBusyPE,numFreePE,utilization,queueSize\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -30,13 +30,23 @@ public class ResourceUtilizationLogger implements JobResourceInfoLogger {
 	@Override
 	public void logResources(double clock, List<ResourceInfo> infos, long queueSize) {
 		long hour = Math.round(clock / 3600);
+		
+		long numFree = 0;
+		//long numTotal = 0;
+		long numBusy = 0;
+		for (ResourceInfo ri: infos) {
+			numFree += ri.getNumFreePE();
+			numBusy += ri.getNumBusyPE();
+			//numTotal += ri.resource.getNumPE();
+			//ri.resource.getNumPE();
+		}
+		//long numBusy = numTotal - numFree;
+		//double utilization = numBusy / (double) numTotal;
+		double utilization = numBusy / (double) (numBusy + numFree);
+		
 		try {
-			for (ResourceInfo ri: infos) {
-				outputWriter.append(hour + "," + ri.resource.getResourceID() 
-					+ "," + ri.resource.getNumBusyPE()
-					+ "," + ri.resource.getNumFreePE() + "\n");
-				//System.out.println("[ResourceUtilizationLogger] log " + ri.resource.getResourceName());
-			}
+			outputWriter.append(hour + "," + numBusy + "," + numFree + "," 
+					+ String.format("%.2f", utilization) + "," + queueSize + "\n");
 			outputWriter.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -45,6 +55,7 @@ public class ResourceUtilizationLogger implements JobResourceInfoLogger {
 
 	@Override
 	public void logJob(double clock, ComplexGridlet gl) {
+		// TODO Auto-generated method stub
 		// Do nothing
 	}
 

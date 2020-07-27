@@ -880,10 +880,10 @@ public class ResultCollector {
 		this.logPlugins = logPlugins;
 	}
 
-	public void doLoggers(List<ResourceInfo> infos, ComplexGridlet gl) {
+	public void doLoggers(List<ResourceInfo> infos, long queueSize, ComplexGridlet gl) {
 		if (!infos.isEmpty()) {
 	    	for (JobResourceInfoLogger logger: logPlugins) {
-	    		logger.logResources(GridSim.clock(), infos);
+	    		logger.logResources(GridSim.clock(), infos, queueSize);
 	    	}
 		}
 		
