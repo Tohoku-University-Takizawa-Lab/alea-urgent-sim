@@ -37,8 +37,10 @@ import agung.algorithms.urgent.UJF;
 import agung.algorithms.urgent.UrgentCONS;
 import agung.algorithms.urgent.UrgentFirstCONS;
 import agung.extensions.urgent.ConstantSwapTime;
+import agung.extensions.urgent.RandomBasedJobInjector;
 import agung.extensions.urgent.RandomSwapTime;
 import agung.extensions.urgent.SwapTimeGen;
+import agung.extensions.urgent.SxAceJobUtil;
 import agung.plugins.logger.JobResourceInfoLogger;
 import agung.plugins.logger.InfoLoggerFactory;
 import xklusac.extensions.*;
@@ -1068,6 +1070,22 @@ public class ExperimentSetup {
                             String failure_loader_name = data_sets[set] + "_FailureLoader";
                             FailureLoaderNew failure = new FailureLoaderNew(failure_loader_name, baudRate, data_sets[set], clusterNames, machineNames, 0);
                         }
+                        
+                        // Create job injection loader
+                        int injectNum =  aCfg.getInt("inject_num");
+                        float injectProb =  (float) aCfg.getDouble("inject_prob");
+                        long jobLenMin = (long) aCfg.getDouble("inject_joblen_min");
+                        long jobLenMax = (long) aCfg.getDouble("inject_joblen_max");
+                        int numNodesMin = aCfg.getInt("inject_jobnodes_min");
+                        int numNodesMax = aCfg.getInt("inject_jobnodes_max");
+                        int injectSeed = aCfg.getInt("inject_randseed");
+                        
+                        if (data_sets[set].contains("inject.swf")) {
+                        	SxAceJobUtil sxJobUtil = new SxAceJobUtil(jobLenMin, jobLenMax, numNodesMin, numNodesMax, injectSeed);
+                        	RandomBasedJobInjector jobInjector = RandomBasedJobInjector.getInstance();
+                        	jobInjector.init(injectNum, injectProb, sxJobUtil, injectSeed);
+                        }
+                        
                         // start the simulation
                         System.out.println("Starting simulation using Alea "+alea_version);
                         

@@ -17,6 +17,7 @@ package xklusac.environment;
  * Alea 4.0 supports <b>MetaCentrum WORKLOAD FORMAT (MWF)</b> which is described at: <a href="http://www.fi.muni.cz/~xklusac/workload/">http://www.fi.muni.cz/~xklusac/workload/</a><p>
  * Alea 4.0 supports <b>PISA WORKLOAD FORMAT (PWF)</b> which is described at: <a href="http://www.fi.muni.cz/~xklusac/alea/">http://www.fi.muni.cz/~xklusac/alea/</a><p>
  * @author Dalibor Klusacek
+ * @author Agung
  */
 public class JobLoader {
     
@@ -48,12 +49,16 @@ public class JobLoader {
         this.estimates = estimates;
         init(data_set);
     }
+    
     /** Creates the Loader entity that will send jobs to the Scheduler */
     private void init(String set){
         try {         
             if(set.contains("gwf")){
                 GWFLoader gwa_loader = new GWFLoader(name, baudRate, total_jobs, data_set, maxPE, minPErating, maxPErating);                
-            }else if(set.contains("swf")){
+            }else if (set.contains("inject.swf")) {
+            	SWFLoaderWithInjects swfwi_loader = new SWFLoaderWithInjects(name, baudRate, total_jobs, data_set, maxPE, minPErating, maxPErating);
+            }
+            else if(set.contains("swf")){
                 SWFLoader pwa_loader = new SWFLoader(name, baudRate, total_jobs, data_set, maxPE, minPErating, maxPErating);
             }else if(set.contains("mwf")){
                 MWFLoader meta_loader = new MWFLoader(name, baudRate, total_jobs, data_set, maxPE, minPErating, maxPErating, multiplier,totPEs, estimates);
@@ -61,7 +66,8 @@ public class JobLoader {
                 PWFLoader pisa_loader = new PWFLoader(name, baudRate, total_jobs, data_set, maxPE, minPErating, maxPErating, exp);
             }else if (set.contains("dyn")){
                 DynamicLoader dyn_loader = new DynamicLoader(name, baudRate, total_jobs, data_set, maxPE, minPErating, maxPErating);
-            }else{
+            }
+            else{
                 System.out.println("Wrong workload format or file extension (gwf,swf,mwf,pwf,ai)");
             }
         } catch (Exception ex) {

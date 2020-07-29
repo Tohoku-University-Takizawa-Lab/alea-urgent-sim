@@ -156,7 +156,7 @@ public class SWFLoader extends GridSim {
     /**
      * Reads one job from file.
      */
-    private ComplexGridlet readGridlet(int j) {
+    protected ComplexGridlet readGridlet(int j) {
         String[] values = null;
         String line = "";
 
