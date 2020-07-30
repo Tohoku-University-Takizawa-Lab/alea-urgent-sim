@@ -4,7 +4,7 @@
  */
 package xklusac.environment;
 
-import agung.extensions.urgent.RandomBasedJobInjector;
+import agung.extensions.urgent.MonthlyUrgentJobInjector;
 import alea.core.AleaSimTags;
 import eduni.simjava.Sim_event;
 import gridsim.GridSimTags;
@@ -19,6 +19,7 @@ import gridsim.GridSimTags;
  */
 public class SWFLoaderWithInjects extends SWFLoader {
 
+	protected int numInjectsTotal;
 	
 	/**
 	 * Creates a new instance of JobLoader
@@ -26,6 +27,7 @@ public class SWFLoaderWithInjects extends SWFLoader {
 	public SWFLoaderWithInjects(String name, double baudRate, int total_jobs, String data_set, int maxPE,
 			int minPErating, int maxPErating) throws Exception {
 		super(name, baudRate, total_jobs, data_set, maxPE, minPErating, maxPErating);
+		this.numInjectsTotal = 0;
 	}
 	
 	/**
@@ -58,7 +60,13 @@ public class SWFLoaderWithInjects extends SWFLoader {
 				// System.out.println("Sending: "+gl.getGridletID());
 				last_delay = delay;
 				super.sim_schedule(this.getEntityId("Alea_3.0_scheduler"), delay, AleaSimTags.GRIDLET_INFO, gl);
-
+				
+				// Do injections
+				int numInjected = MonthlyUrgentJobInjector.getInstance().injectJobs(this, gl.getArrival_time());
+				current_gl += numInjected;
+				numUrgentJobs += numInjected;
+				numInjectsTotal += numInjected;
+				
 				delay = Math.max(0.0, (gl.getArrival_time() - super.clock()));
 				if (current_gl < total_jobs) {
 					// use delay - next job will be loaded after the simulation time is equal to the
@@ -66,17 +74,14 @@ public class SWFLoaderWithInjects extends SWFLoader {
 					super.sim_schedule(this.getEntityId(this.getEntityName()), delay, AleaSimTags.EVENT_WAKE);
 				}
 
-				// Do injections
-				int numInjected = RandomBasedJobInjector.getInstance().injectJobs(this, gl.getArrival_time());
-				numUrgentJobs += numInjected;
-				
 				continue;
 			}
 			
 			
 		}
 		System.out.println(
-				"Shuting down - last gridlet = " + current_gl + " of " + total_jobs + ", urgent = " + numUrgentJobs);
+				"Shuting down - last gridlet = " + current_gl + " of " + total_jobs + ", urgent = " + numUrgentJobs
+				+ ", injected = " + numInjectsTotal);
 		super.sim_schedule(this.getEntityId("Alea_3.0_scheduler"), Math.round(last_delay + 2),
 				AleaSimTags.SUBMISSION_DONE, new Integer(current_gl));
 		Sim_event ev = new Sim_event();

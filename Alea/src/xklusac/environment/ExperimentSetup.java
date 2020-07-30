@@ -32,11 +32,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import agung.algorithms.urgent.PreemptiveUJF;
+import agung.algorithms.urgent.PreemptiveUrgentCONS;
 import agung.algorithms.urgent.PreemptiveUrgentFirstCONS;
 import agung.algorithms.urgent.UJF;
 import agung.algorithms.urgent.UrgentCONS;
 import agung.algorithms.urgent.UrgentFirstCONS;
 import agung.extensions.urgent.ConstantSwapTime;
+import agung.extensions.urgent.JobInjector;
+import agung.extensions.urgent.JobSwapper;
+import agung.extensions.urgent.MonthlyUrgentJobInjector;
 import agung.extensions.urgent.RandomBasedJobInjector;
 import agung.extensions.urgent.RandomSwapTime;
 import agung.extensions.urgent.SwapTimeGen;
@@ -46,7 +50,6 @@ import agung.plugins.logger.InfoLoggerFactory;
 import xklusac.extensions.*;
 import xklusac.extensions.Queue;
 import xklusac.algorithms.*;
-import xklusac.algorithms.schedule_based.PreemptiveUrgentCONS;
 import xklusac.plugins.Plugin;
 import xklusac.plugins.PluginConfiguration;
 import xklusac.plugins.PluginFactory;
@@ -695,6 +698,37 @@ public class ExperimentSetup {
                 }
             }*/
             
+            // Create job injection loader for specific data sets
+            if (data_sets[set].contains("inject.swf")) {
+            	int injectNum =  aCfg.getInt("inject_num");
+            	
+            	if (injectNum < 0) {
+            		throw new RuntimeException("Invalid inject_num configuration! (must be >= 0)");
+            	}
+            		
+            	long jobLenMin = (long) aCfg.getDouble("inject_joblen_min");
+            	long jobLenMax = (long) aCfg.getDouble("inject_joblen_max");
+            	int numNodesMin = aCfg.getInt("inject_jobnodes_min");
+            	int numNodesMax = aCfg.getInt("inject_jobnodes_max");
+            	int injectSeed = aCfg.getInt("inject_randseed");
+            	SxAceJobUtil sxJobUtil = new SxAceJobUtil(jobLenMin, jobLenMax, numNodesMin, numNodesMax, injectSeed);
+            	
+            	String injectorClass = aCfg.getString("inject_class");
+            	JobInjector jobInjector = null;
+            	if (injectorClass.equals("RandomBasedJobInjector")) {
+                    float injectProb =  (float) aCfg.getDouble("inject_prob");
+                	jobInjector = RandomBasedJobInjector.getInstance();
+                	((RandomBasedJobInjector) jobInjector).init(injectNum, injectProb, sxJobUtil, injectSeed);
+            	}
+            	else if (injectorClass.equals("MonthlyUrgentJobInjector")) {
+            		jobInjector = MonthlyUrgentJobInjector.getInstance();
+            		((MonthlyUrgentJobInjector) jobInjector).init(sxJobUtil, injectNum, injectSeed);
+            	}
+            	
+            	// Update total_gridlet of the set
+            	total_gridlet[set] += injectNum;
+            }
+            
             int algorithms[] = aCfg.getIntArray("algorithms");
 
             // select which algorithms from the algorithms[] list will be used.
@@ -1060,7 +1094,7 @@ public class ExperimentSetup {
                         MachineLoader m_loader = new MachineLoader(10000, 3.0, data_sets[set]);
                         rnd_seed = sel_alg;
                         System.out.println("The system has "+Math.round(avail_CPUs) + " CPUs and " + Math.round(avail_RAM/(1024*1024))+" GBs of RAM.");
-
+                        
                         // creates job loader
                         JobLoader job_loader = new JobLoader(job_loader_name, baudRate, total_gridlet[set], data_sets[set], maxPE, minPErating, maxPErating,
                                 arrival_rate_multiplier, pass_count, m_loader.total_CPUs, estimates);
@@ -1069,21 +1103,6 @@ public class ExperimentSetup {
                             // create machine failure loader
                             String failure_loader_name = data_sets[set] + "_FailureLoader";
                             FailureLoaderNew failure = new FailureLoaderNew(failure_loader_name, baudRate, data_sets[set], clusterNames, machineNames, 0);
-                        }
-                        
-                        // Create job injection loader
-                        int injectNum =  aCfg.getInt("inject_num");
-                        float injectProb =  (float) aCfg.getDouble("inject_prob");
-                        long jobLenMin = (long) aCfg.getDouble("inject_joblen_min");
-                        long jobLenMax = (long) aCfg.getDouble("inject_joblen_max");
-                        int numNodesMin = aCfg.getInt("inject_jobnodes_min");
-                        int numNodesMax = aCfg.getInt("inject_jobnodes_max");
-                        int injectSeed = aCfg.getInt("inject_randseed");
-                        
-                        if (data_sets[set].contains("inject.swf")) {
-                        	SxAceJobUtil sxJobUtil = new SxAceJobUtil(jobLenMin, jobLenMax, numNodesMin, numNodesMax, injectSeed);
-                        	RandomBasedJobInjector jobInjector = RandomBasedJobInjector.getInstance();
-                        	jobInjector.init(injectNum, injectProb, sxJobUtil, injectSeed);
                         }
                         
                         // start the simulation

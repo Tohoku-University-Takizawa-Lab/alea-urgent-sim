@@ -935,7 +935,11 @@ public class Scheduler extends GridSim {
                         super.sim_schedule(this.getEntityId(gridlet_received.getOnJobFail()), 60, AleaSimTags.AGENT_ONJOBFAIL, gridlet_received);
                     }
                 } else {
-
+                	// Reset received counter if it is suspended s.t simulator will continue for the suspended jobs
+                	if (gridlet_received.getGridletStatus() == Gridlet.CANCELED && gridlet_received.isSuspended()) {
+                		received--;
+                	}
+                	
                 	//System.out.println("Else status: " + gridlet_received.getGridletStatus());
                     if (gridlet_received.getOnJobCompl() != null) {
                         super.sim_schedule(this.getEntityId(gridlet_received.getOnJobCompl()), 60, AleaSimTags.AGENT_ONJOBCOMPL, gridlet_received);
@@ -982,7 +986,7 @@ public class Scheduler extends GridSim {
 
                 rc.addFinishedJobToResults(gridlet_received, resourceInfoList);
 
-                // update of user's resource consuption
+                // update of user's resource consumption
                 updateLengthStatistics(gridlet_received, cpu_time);
 
                 if (received % 100 == 0) {

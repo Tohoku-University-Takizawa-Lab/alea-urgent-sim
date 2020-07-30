@@ -1,7 +1,9 @@
-package xklusac.environment;
+package agung.extensions.urgent;
 
-import agung.extensions.urgent.SwapTimeGen;
 import gridsim.Gridlet;
+import xklusac.environment.GridletInfo;
+import xklusac.environment.ResourceInfo;
+import xklusac.environment.Scheduler;
 
 /**
  * Class for emulating job swapping.

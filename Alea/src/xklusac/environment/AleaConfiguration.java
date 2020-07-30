@@ -111,7 +111,7 @@ public class AleaConfiguration {
     }
     
     public Map<String, String> getPluginConfiguration(int pluginIndex) {
-    	return getPluginConfiguration(pluginIndex, LOG_PLUGINS_PREFIX);
+    	return getPluginConfiguration(pluginIndex, PLUGIN);
     }
     
     public Map<String, String> getLogPluginConfiguration(int pluginIndex) {
