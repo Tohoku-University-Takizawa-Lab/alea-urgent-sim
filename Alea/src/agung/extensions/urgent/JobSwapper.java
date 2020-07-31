@@ -1,5 +1,9 @@
 package agung.extensions.urgent;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import gridsim.Gridlet;
 import xklusac.environment.GridletInfo;
 import xklusac.environment.ResourceInfo;
@@ -11,6 +15,30 @@ import xklusac.environment.Scheduler;
  *
  */
 public class JobSwapper {
+	
+	public enum Result {
+		SUCCESS(true), FAIL(false);
+		
+		private boolean success;
+		private double delay;
+		
+		Result(boolean success) {
+			this.success = success;
+			this.delay = 0.0;
+		}
+		
+		public boolean isSuccess() {
+			return success;
+		}
+		
+		public void setDelay(double delay) {
+			this.delay = delay;
+		}
+		
+		public double getDelay() {
+			return delay;
+		}
+	}
 	
 	// Time needed for swapping in (in seconds)
 	public static final double DEF_SWAPOUT_DELAY = 1;
@@ -24,7 +52,7 @@ public class JobSwapper {
 		this.delayGen = gen;
 	}
 	
-	public boolean swapout(GridletInfo gi, ResourceInfo ri) {
+	public Result swapout(GridletInfo gi, ResourceInfo ri) {
 		double delay = delayGen.genSwapoutTime();
 		// Emulating the swapping time with GridSim delay
 		// 1. Pause no delay
@@ -37,9 +65,12 @@ public class JobSwapper {
 		
 		scheduler.cancelJob(gi.getGridlet(), ri.resource.getResourceID(), delay);
 		
-		boolean swapped = (gi.getGridlet().getGridletStatus() == Gridlet.CANCELED);
+		Result res = (gi.getGridlet().getGridletStatus() == Gridlet.CANCELED ? 
+				Result.SUCCESS : Result.FAIL);
+		//boolean swapped = (gi.getGridlet().getGridletStatus() == Gridlet.CANCELED);
 		// Put the preempted job on the head of queue if it is canceled successfully
-		if (swapped) {
+		if (res.isSuccess()) {
+			res.setDelay(delay);
 			//ri.removeGInfo(gi);
 			//ri.addGInfo(0, gi); // Handle by the scheduling algorithm
 			
@@ -50,7 +81,7 @@ public class JobSwapper {
 			// Finished before it is canceled.
 			gi.setSuspended(false);
 		}
-		return swapped;
+		return res;
 	}
 	
 	public double swapin(GridletInfo gi, ResourceInfo ri) {
@@ -60,5 +91,31 @@ public class JobSwapper {
 		gi.getGridlet().addTotalSwapDelay(delay);
 		return delay;
 	}
+	
+	public void delayUrgentJob(GridletInfo gi, List<Result> swapResults) {
+		 if (!swapResults.isEmpty()) {
+			//double newLength = gi.getGridlet().getGridletLength() 
+         	//		+ Collections.max(swapDelays);
+         	//gi.getGridlet().setGridletLength(newLength);
+         	//gi.setLength(gi.getGridlet().getGridletLength());
+         	gi.setSubmissionDelay(Collections.max(swapResults, swapDelayComparator).delay);
+         }
+	}
+	
+	/**
+     * UrgencyComparator<p>
+     * Compares two SwapResults according to their delays.
+     */
+    public static Comparator<Result> swapDelayComparator = new Comparator<Result>() {
+		@Override
+		public int compare(Result o1, Result o2) {
+	        if(o1.getDelay() > o2.getDelay()) 
+	        	return 1;
+	        else if(o1.getDelay() < o2.getDelay()) 
+	        	return -1;
+	        else
+	        	return 0;
+		}
+	};
 	
 }

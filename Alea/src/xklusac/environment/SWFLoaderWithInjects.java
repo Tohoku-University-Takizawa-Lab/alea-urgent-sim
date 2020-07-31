@@ -62,7 +62,8 @@ public class SWFLoaderWithInjects extends SWFLoader {
 				super.sim_schedule(this.getEntityId("Alea_3.0_scheduler"), delay, AleaSimTags.GRIDLET_INFO, gl);
 				
 				// Do injections
-				int numInjected = MonthlyUrgentJobInjector.getInstance().injectJobs(this, gl.getArrival_time());
+				int numInjected = MonthlyUrgentJobInjector.getInstance().injectJobs(
+						this, gl.getArrival_time(), maxPErating);
 				current_gl += numInjected;
 				numUrgentJobs += numInjected;
 				numInjectsTotal += numInjected;

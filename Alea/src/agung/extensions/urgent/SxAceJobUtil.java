@@ -11,6 +11,10 @@ public class SxAceJobUtil {
 	private static final String URGENT_USER = "thanos";
 	private static final String URGENT_QUEUE = "urgentQ";
 	
+	// Job limit as specified in the SX-ACE manual: https://www.ss.cc.tohoku.ac.jp/super/index.html
+	private static final int JOB_LIMIT_DEF = 7 * 3600 * 24;			// 1 week
+	private static final int JOB_LIMIT_MAX = JOB_LIMIT_DEF * 4;		// 1 month
+	
 	
 	private Random random;
 	private long jobLenMin;
@@ -35,18 +39,18 @@ public class SxAceJobUtil {
 	}
 
 
-	public ComplexGridlet generateUrgentJob(double arrival) {
+	public ComplexGridlet generateUrgentJob(double arrival, int ratingPE) {
 		
-		long jobLen = genRandomJobLength();
+		long jobLen = genRandomJobLength() * ratingPE;
 		// User accurately estimate the job runtime, so the job limit = jobLen
-		double deadline = jobLen * 2;
+		//double deadline = jobLen * 2;
 		int numNodes = genRandomNumNodes();
 		long ramUsage = 0;
 		int ppn = 1;
 		
 		ComplexGridlet gl = new ComplexGridlet(URGENT_ID_OFFSET + currentId.getAndIncrement(), URGENT_USER,
-				jobLen, (double) jobLen, (double) jobLen, 10, 10, "Linux", "Risc arch.", arrival, deadline, 1,
-				numNodes, 0.0, URGENT_QUEUE, "", 0.0, ramUsage, numNodes, ppn, UrgentGridletUtil.DEFAULT_URGENCY);
+				JOB_LIMIT_DEF, (double) jobLen, (double) jobLen, 10, 10, "Linux", "Risc arch.", arrival, JOB_LIMIT_MAX,
+				1, numNodes, 0.0, URGENT_QUEUE, "", 0.0, ramUsage, numNodes, ppn, UrgentGridletUtil.DEFAULT_URGENCY);
 		
 		return gl;
 	}

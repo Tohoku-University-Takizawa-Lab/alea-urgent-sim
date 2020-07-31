@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package agung.algorithms.urgent;
 
 import java.util.ArrayList;
@@ -9,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import agung.extensions.urgent.JobSwapper;
+import agung.extensions.urgent.JobSwapper.Result;
 import agung.extensions.urgent.UrgentGridletUtil;
 import xklusac.environment.GridletInfo;
 import xklusac.environment.ResourceInfo;
@@ -62,7 +59,8 @@ public class PreemptiveUJF extends UJF {
                 	jobSwapper.swapin(gi, r_cand);
                 }
                 else {
-                	scheduler.submitJob(gi.getGridlet(), r_cand.resource.getResourceID());
+                	//scheduler.submitJob(gi.getGridlet(), r_cand.resource.getResourceID());
+                	scheduler.submitJobWithDelay(gi.getGridlet(), r_cand.resource.getResourceID(), gi.getSubmissionDelay());
                 }
                 
                 r_cand.is_ready = true;
@@ -86,6 +84,7 @@ public class PreemptiveUJF extends UJF {
                     // Prioritize jobs with longer time-to-finish to be preempted 
                     Collections.sort(runInfos, UrgentGridletUtil.finishSoFarComparator);
                     
+                    ArrayList<Result> swapResults = new ArrayList<Result>();
                     int toFree = gi.getNumPE() - targetRi.getNumFreePE();
                     int visit = 0;
                     while (toFree > 0 && visit < runInfos.size()) {
@@ -103,9 +102,10 @@ public class PreemptiveUJF extends UJF {
 	                        //scheduler.cancelJob(info.getGridlet(), targetRi.resource.getResourceID(), 0);
 	                        //jobSwapper.swapout(info, targetRi);
 	                        
-	                        boolean swapped = jobSwapper.swapout(info, targetRi);
+	                        //boolean swapped = jobSwapper.swapout(info, targetRi);
+	                        Result swapResult = jobSwapper.swapout(info, targetRi);
 	                        
-	                        if (swapped) {
+	                        if (swapResult.isSuccess()) {
 	                        	targetRi.lowerResInExec(info);
 	                        	//targetRi.removeGInfo(info);
 		                        // Put the preempted job into the earliest queue of regular jobs
@@ -120,6 +120,8 @@ public class PreemptiveUJF extends UJF {
 		                        Scheduler.queue.add(actual_idx, info);
 		                        System.out.format("- Put back preempted job %d to slot %d of scheduler queue.\n",
 		                                info.getID(), actual_idx);
+		                        
+		                        swapResults.add(swapResult);
 	                        }
 	                        
 	                        // Resubmit to the head of queue
@@ -131,6 +133,9 @@ public class PreemptiveUJF extends UJF {
                         visit++;
                         
                     }
+                    // Punish urgent job with the preemption delays
+                    jobSwapper.delayUrgentJob(gi, swapResults);
+                    
                     // Now urgent job is ready to submit
                     //targetRi.addGInfoInExec(gi);
                     //gi.setResourceID(targetRi.resource.getResourceID());

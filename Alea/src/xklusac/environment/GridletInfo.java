@@ -754,5 +754,14 @@ public class GridletInfo {
 	public void setSuspended(boolean suspended) {
 		getGridlet().setSuspended(suspended);
 	}
+	
+	public void setSubmissionDelay(double delay) {
+		getGridlet().setSubmissionDelay(delay);
+	}
+	
+	public double getSubmissionDelay() {
+		return getGridlet().getSubmissionDelay();
+	}
+
 
 }

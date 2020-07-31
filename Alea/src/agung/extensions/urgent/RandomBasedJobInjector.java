@@ -27,11 +27,11 @@ public class RandomBasedJobInjector implements JobInjector {
 
 
 	@Override
-	public int injectJobs(GridSim gridsim, double arrivalTime) {
+	public int injectJobs(GridSim gridsim, double arrivalTime, int ratingPE) {
 		int injected = 0;
 		if (numInjectsNow < numInjects && injectRand.nextFloat() <= injectProb) {
 			
-			ComplexGridlet gl = sxJobUtil.generateUrgentJob(arrivalTime);
+			ComplexGridlet gl = sxJobUtil.generateUrgentJob(arrivalTime, ratingPE);
 			
 	        // and set user id to the Scheduler entity - otherwise it would be returned to the JobLoader when completed.
 	        //System.out.println(id+" job has limit = "+(job_limit/3600.0)+" queue = "+queue);

@@ -28,7 +28,7 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 	}
 
 	@Override
-	public int injectJobs(GridSim gridsim, double currentArrivalTime) {
+	public int injectJobs(GridSim gridsim, double currentArrivalTime, int ratingPE) {
 		int injected = 0;
 		
 		int currentDay = (int) Math.ceil(currentArrivalTime / (3600*24));
@@ -41,7 +41,7 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 			int randDay = injectRand.nextInt(MONTH_DAYS - relativeDay + 1) + relativeDay;
 			double arrivalTime = (((currentMonth-1) * MONTH_DAYS) + randDay) * 3600 * 24;
 			
-			ComplexGridlet gl = sxJobUtil.generateUrgentJob(arrivalTime);
+			ComplexGridlet gl = sxJobUtil.generateUrgentJob(arrivalTime, ratingPE);
 			
 	        // and set user id to the Scheduler entity - otherwise it would be returned to the JobLoader when completed.
 	        //System.out.println(id+" job has limit = "+(job_limit/3600.0)+" queue = "+queue);

@@ -4,10 +4,12 @@
  */
 package agung.algorithms.urgent;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import agung.extensions.urgent.JobSwapper;
+import agung.extensions.urgent.JobSwapper.Result;
 import agung.extensions.urgent.UrgentGridletUtil;
 import xklusac.environment.GridletInfo;
 import xklusac.environment.ResourceInfo;
@@ -44,7 +46,15 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
                     gi.setResourceID(ri.resource.getResourceID());
                     // tell the user where to send which gridlet
 
-                    scheduler.submitJob(gi.getGridlet(), ri.resource.getResourceID());
+                    //scheduler.submitJob(gi.getGridlet(), ri.resource.getResourceID());
+                    // Add swapping in delay
+                    if (gi.isSuspended()) {
+                    	jobSwapper.swapin(gi, ri);
+                    }
+                    else {
+                    	//scheduler.submitJob(gi.getGridlet(), r_cand.resource.getResourceID());
+                    	scheduler.submitJobWithDelay(gi.getGridlet(), ri.resource.getResourceID(), gi.getSubmissionDelay());
+                    }
 
                     ri.is_ready = true;
                     //scheduler.sim_schedule(GridSim.getEntityId("Alea_3.0_scheduler"), 0.0, AleaSimTags.GRIDLET_SENT, gi);
@@ -60,6 +70,7 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
                     // Prioritize jobs with longer time-to-finish to be preempted 
                     Collections.sort(runInfos, UrgentGridletUtil.finishSoFarComparator);
 
+                    ArrayList<Result> swapResults = new ArrayList<Result>();
                     int toFree = gi.getNumPE() - ri.getNumFreePE();
                     int visit = 0;
                     while (toFree > 0 && visit < runInfos.size()) {
@@ -70,9 +81,10 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
 	                        System.out.format("- Preempting job %s (PE=%d,Mem=%d) for urgent_job=%d (PE:%d), toFree=%d\n",
 	                                info.getID(), info.getNumPE(), info.getRam(), gi.getID(), gi.getNumPE(), toFree);
 	
-	                        boolean swapped = jobSwapper.swapout(info, ri);
+	                        //boolean swapped = jobSwapper.swapout(info, ri);
+	                        Result swapResult = jobSwapper.swapout(info, ri);
 	                        
-	                        if (swapped) {
+	                        if (swapResult.isSuccess()) {
 	                        	ri.lowerResInExec(info);
 	                        	ri.removeGInfo(info);
 		                        // Put the preempted job into the earliest queue of regular jobs
@@ -85,12 +97,15 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
 		                        ri.addGInfo(actual_idx, info);
 		                        System.out.format("- Put back preempted job %d to slot %d of resource %d:%s.\n",
 		                                info.getID(), actual_idx, ri.resource.getResourceID(), ri.resource.getResourceName());
+		                        swapResults.add(swapResult);
 	                        }
 	
 	                        toFree -= info.getNumPE();
                         }
                         visit++;
                      }
+                     jobSwapper.delayUrgentJob(gi, swapResults);
+                     
                      //Scheduler.updateResourceInfos(GridSim.clock());
                      // Now urgent job is ready to submit
                      //ri.addGInfoInExec(gi);

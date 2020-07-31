@@ -66,6 +66,7 @@ public class ComplexGridlet extends Gridlet {
     private int urgency;
     private int numPreempted;
     private double totalSwapDelay;
+    private double submissionDelay;
 	// Flag if it is suspended
     private boolean suspended;
 
@@ -141,6 +142,7 @@ public class ComplexGridlet extends Gridlet {
         this.setUrgency(0);
         this.setNumPreempted(0);
         this.setTotalSwapDelay(0.0);
+        this.setSubmissionDelay(0.0);
         this.setSuspended(false);
     }
     
@@ -432,6 +434,13 @@ public class ComplexGridlet extends Gridlet {
 	public void setSuspended(boolean suspended) {
 		this.suspended = suspended;
 	}
-	
 
+	public double getSubmissionDelay() {
+		return submissionDelay;
+	}
+
+	public void setSubmissionDelay(double submitDelay) {
+		this.submissionDelay = submitDelay;
+	}
+	
 }
