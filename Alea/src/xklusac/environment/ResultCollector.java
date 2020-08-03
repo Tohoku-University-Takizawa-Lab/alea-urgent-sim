@@ -455,7 +455,16 @@ public class ResultCollector {
         else {
             success++;
             finish_time = gi.getGridlet().getFinishTime();
-            cpu_time = gi.getGridlet().getActualCPUTime();
+            //cpu_time = gi.getGridlet().getActualCPUTime();
+            
+            if (gridlet_received.getNumPreempted() > 0) {
+            	gi.getGridlet().addTotalCPUTime(gi.getGridlet().getActualCPUTime());
+            	cpu_time = gi.getGridlet().getTotalCPUTime();
+            }
+            else { 
+            	cpu_time = gi.getGridlet().getActualCPUTime();
+            }
+            
             arrival = gi.getGridlet().getArrival_time();
             mips = gridlet_received.getGridletLength();
             double succ_resp = Math.max(0.0, (finish_time - arrival));

@@ -69,6 +69,9 @@ public class ComplexGridlet extends Gridlet {
     private double submissionDelay;
 	// Flag if it is suspended
     private boolean suspended;
+    // Information of original length, since a job can be suspended
+    private double originalLength;
+    private double totalCPUTime;
 
     private String onJobStart = null;
     private String onJobCompl = null;
@@ -144,6 +147,8 @@ public class ComplexGridlet extends Gridlet {
         this.setTotalSwapDelay(0.0);
         this.setSubmissionDelay(0.0);
         this.setSuspended(false);
+        this.setOriginalLength(gridletLength);
+        this.setTotalCPUTime(0.0);
     }
     
     public ComplexGridlet(int gridletID, String user, long job_limit, double gridletLength, double estimatedLength, long gridletFileSize,
@@ -442,5 +447,25 @@ public class ComplexGridlet extends Gridlet {
 	public void setSubmissionDelay(double submitDelay) {
 		this.submissionDelay = submitDelay;
 	}
+
+	public double getOriginalLength() {
+		return originalLength;
+	}
+
+	public void setOriginalLength(double originalLength) {
+		this.originalLength = originalLength;
+	}
+
+	public double getTotalCPUTime() {
+		return totalCPUTime;
+	}
+
+	public void setTotalCPUTime(double totalCPUTime) {
+		this.totalCPUTime = totalCPUTime;
+	}
 	
+	public void addTotalCPUTime(double cpuTime) {
+		this.totalCPUTime += cpuTime;
+	}
+
 }

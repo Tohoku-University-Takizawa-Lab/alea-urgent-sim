@@ -76,6 +76,15 @@ public class JobSwapper {
 			
 			gi.getGridlet().addTotalSwapDelay(delay);
 			gi.getGridlet().addNumPreempted(1);
+			
+			// Update the job length
+			// Subtract the previous job runtime from the original job length
+			gi.getGridlet().addTotalCPUTime(gi.getGridlet().getActualCPUTime());
+			gi.getGridlet().setGridletLength(gi.getGridlet().getGridletLength() - 
+					gi.getGridlet().getGridletFinishedSoFar());
+			gi.getGridlet().setEstimatedLength(gi.getGridlet().getEstimatedLength() - 
+					gi.getGridlet().getGridletFinishedSoFar());
+			gi.getGridlet().setGridletFinishedSoFar(0.0);
 		}
 		else {
 			// Finished before it is canceled.

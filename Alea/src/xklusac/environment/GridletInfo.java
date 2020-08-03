@@ -17,6 +17,7 @@ import java.util.List;
  * changing ComplexGridlet class (if possible).
  *
  * @author Dalibor Klusacek
+ * @author Mulya Agung
  */
 public class GridletInfo {
 
@@ -763,5 +764,7 @@ public class GridletInfo {
 		return getGridlet().getSubmissionDelay();
 	}
 
-
+	public double getOriginalLength() {
+		return getGridlet().getOriginalLength();
+	}
 }
