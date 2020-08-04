@@ -28,7 +28,7 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 	}
 
 	@Override
-	public int injectJobs(GridSim gridsim, double currentArrivalTime, int ratingPE) {
+	public int injectJobs(GridSim gridsim, double currentArrivalTime, int ratingPE, int numJobs) {
 		int injected = 0;
 		
 		if (currentNumInjects < numInjects) {
@@ -50,11 +50,11 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 				currentNumInjects++;
 				lastMonthInjected = currentMonth;
 			}
-			else {
+			else if (numJobs > 1) {
 				// Job traces finished but the allocated number of injections has not been reached.
 				// So, let's put the remaining injections on the current month.
-				int numRemaining = numInjects - currentNumInjects;
-				for (int i = 0; i < numRemaining; i++) {
+				//int numRemaining = numInjects - currentNumInjects;
+				for (int i = 0; i < numJobs; i++) {
 					generateSendJob(gridsim, arrivalTime, ratingPE, currentMonth, relativeDay);
 					injected++;
 					currentNumInjects++;

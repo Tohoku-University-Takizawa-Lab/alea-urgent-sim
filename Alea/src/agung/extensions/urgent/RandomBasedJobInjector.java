@@ -27,7 +27,7 @@ public class RandomBasedJobInjector implements JobInjector {
 
 
 	@Override
-	public int injectJobs(GridSim gridsim, double arrivalTime, int ratingPE) {
+	public int injectJobs(GridSim gridsim, double arrivalTime, int ratingPE, int numJobs) {
 		int injected = 0;
 		if (numInjectsNow < numInjects && injectRand.nextFloat() <= injectProb) {
 			

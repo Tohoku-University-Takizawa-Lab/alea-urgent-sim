@@ -77,8 +77,15 @@ public class SWFLoaderWithInjects extends SWFLoader {
 				//}
 				
 				// Do injections
-				int numInjected = JobInjectorSingletonProxy.get().injectJobs(
-						this, currentArrival, maxPErating);
+				int numInjected = 0;
+				if (!fileFinished) {
+					numInjected = JobInjectorSingletonProxy.get().injectJobs(
+						this, currentArrival, maxPErating, 1);
+				} else {
+					int remaining = total_jobs - current_gl;
+					numInjected = JobInjectorSingletonProxy.get().injectJobs(
+							this, currentArrival, maxPErating, remaining);
+				}
 				current_gl += numInjected;
 				numUrgentJobs += numInjected;
 				numInjectsTotal += numInjected;

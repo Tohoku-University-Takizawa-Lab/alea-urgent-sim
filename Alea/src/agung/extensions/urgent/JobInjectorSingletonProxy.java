@@ -35,8 +35,8 @@ public class JobInjectorSingletonProxy implements JobInjector {
 	}
 
 	@Override
-	public int injectJobs(GridSim gridsim, double arrivalTime, int ratingPE) {
-		return jobInjector.injectJobs(gridsim, arrivalTime, ratingPE);
+	public int injectJobs(GridSim gridsim, double arrivalTime, int ratingPE, int numJobs) {
+		return jobInjector.injectJobs(gridsim, arrivalTime, ratingPE, numJobs);
 	}
 	
 	@Override
