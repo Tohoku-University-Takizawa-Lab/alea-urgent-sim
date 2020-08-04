@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package xklusac.environment;
 
 import agung.extensions.urgent.JobInjectorSingletonProxy;
@@ -74,11 +70,11 @@ public class SWFLoaderWithInjects extends SWFLoader {
 					last_delay = delay;
 					super.sim_schedule(this.getEntityId("Alea_3.0_scheduler"), delay, AleaSimTags.GRIDLET_INFO, gl);
 				}
-				else {
+				//else {
 					// File finished but there are still pending injections
 					// Advance the current arrival time for one month
-					currentArrival += (3600*24*30);
-				}
+				//	currentArrival += (3600*24*30);
+				//}
 				
 				// Do injections
 				int numInjected = JobInjectorSingletonProxy.get().injectJobs(
