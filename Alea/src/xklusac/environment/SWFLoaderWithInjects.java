@@ -4,7 +4,7 @@
  */
 package xklusac.environment;
 
-import agung.extensions.urgent.MonthlyUrgentJobInjector;
+import agung.extensions.urgent.JobInjectorSingletonProxy;
 import alea.core.AleaSimTags;
 import eduni.simjava.Sim_event;
 import gridsim.GridSimTags;
@@ -20,6 +20,8 @@ import gridsim.GridSimTags;
 public class SWFLoaderWithInjects extends SWFLoader {
 
 	protected int numInjectsTotal;
+	private int numGridletReads;
+	private double currentArrival;
 	
 	/**
 	 * Creates a new instance of JobLoader
@@ -28,6 +30,7 @@ public class SWFLoaderWithInjects extends SWFLoader {
 			int minPErating, int maxPErating) throws Exception {
 		super(name, baudRate, total_jobs, data_set, maxPE, minPErating, maxPErating);
 		this.numInjectsTotal = 0;
+		this.numGridletReads = 0;
 	}
 	
 	/**
@@ -44,31 +47,37 @@ public class SWFLoaderWithInjects extends SWFLoader {
 			sim_get_next(ev);
 
 			if (ev.get_tag() == AleaSimTags.EVENT_WAKE) {
-
-				ComplexGridlet gl = readGridlet(current_gl);
-				current_gl++;
-				if (gl == null && current_gl < total_jobs) {
-					super.sim_schedule(this.getEntityId(this.getEntityName()), 0.0, AleaSimTags.EVENT_WAKE);
-					continue;
-				} else if (gl == null && current_gl >= total_jobs) {
-					continue;
+				// Stop reading jobs from the file when the total number of jobs in the file have been reached
+				if (numGridletReads < (total_jobs - JobInjectorSingletonProxy.get().getTotalNumInjects())) {
+					ComplexGridlet gl = readGridlet(current_gl);
+					current_gl++;
+					numGridletReads++;
+					
+					if (gl == null && current_gl < total_jobs) {
+						super.sim_schedule(this.getEntityId(this.getEntityName()), 0.0, AleaSimTags.EVENT_WAKE);
+						continue;
+					} else if (gl == null && current_gl >= total_jobs) {
+						continue;
+					}
+					
+					currentArrival = gl.getArrival_time();
+					// to synchronize job arrival wrt. the data set.
+					double delay = Math.max(0.0, (gl.getArrival_time() - super.clock()));
+					// some time is needed to transfer this job to the scheduler, i.e., delay should
+					// be delay = delay - transfer_time. Fix this in the future.
+					// System.out.println("Sending: "+gl.getGridletID());
+					last_delay = delay;
+					super.sim_schedule(this.getEntityId("Alea_3.0_scheduler"), delay, AleaSimTags.GRIDLET_INFO, gl);
 				}
-				// to synchronize job arrival wrt. the data set.
-				double delay = Math.max(0.0, (gl.getArrival_time() - super.clock()));
-				// some time is needed to transfer this job to the scheduler, i.e., delay should
-				// be delay = delay - transfer_time. Fix this in the future.
-				// System.out.println("Sending: "+gl.getGridletID());
-				last_delay = delay;
-				super.sim_schedule(this.getEntityId("Alea_3.0_scheduler"), delay, AleaSimTags.GRIDLET_INFO, gl);
 				
 				// Do injections
-				int numInjected = MonthlyUrgentJobInjector.getInstance().injectJobs(
-						this, gl.getArrival_time(), maxPErating);
+				int numInjected = JobInjectorSingletonProxy.get().injectJobs(
+						this, currentArrival, maxPErating);
 				current_gl += numInjected;
 				numUrgentJobs += numInjected;
 				numInjectsTotal += numInjected;
 				
-				delay = Math.max(0.0, (gl.getArrival_time() - super.clock()));
+				double delay = Math.max(0.0, (currentArrival - super.clock()));
 				if (current_gl < total_jobs) {
 					// use delay - next job will be loaded after the simulation time is equal to the
 					// previous job arrival.
@@ -81,8 +90,8 @@ public class SWFLoaderWithInjects extends SWFLoader {
 			
 		}
 		System.out.println(
-				"Shuting down - last gridlet = " + current_gl + " of " + total_jobs + ", urgent = " + numUrgentJobs
-				+ ", injected = " + numInjectsTotal);
+				"Shuting down - last gridlet = " + current_gl + " of " + total_jobs + ", readGridlets = " 
+				+ (current_gl - numInjectsTotal) + ", urgent = " + numUrgentJobs + ", injected = " + numInjectsTotal);
 		super.sim_schedule(this.getEntityId("Alea_3.0_scheduler"), Math.round(last_delay + 2),
 				AleaSimTags.SUBMISSION_DONE, new Integer(current_gl));
 		Sim_event ev = new Sim_event();

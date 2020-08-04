@@ -70,4 +70,10 @@ public class RandomBasedJobInjector implements JobInjector {
         }
         return instance;
 	}
+
+
+	@Override
+	public int getTotalNumInjects() {
+		return numInjects;
+	}
 }

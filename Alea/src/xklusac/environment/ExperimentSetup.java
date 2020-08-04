@@ -39,6 +39,7 @@ import agung.algorithms.urgent.UrgentCONS;
 import agung.algorithms.urgent.UrgentFirstCONS;
 import agung.extensions.urgent.ConstantSwapTime;
 import agung.extensions.urgent.JobInjector;
+import agung.extensions.urgent.JobInjectorSingletonProxy;
 import agung.extensions.urgent.JobSwapper;
 import agung.extensions.urgent.MonthlyUrgentJobInjector;
 import agung.extensions.urgent.RandomBasedJobInjector;
@@ -712,19 +713,7 @@ public class ExperimentSetup {
             	int numNodesMax = aCfg.getInt("inject_jobnodes_max");
             	int injectSeed = aCfg.getInt("inject_randseed");
             	SxAceJobUtil sxJobUtil = new SxAceJobUtil(jobLenMin, jobLenMax, numNodesMin, numNodesMax, injectSeed);
-            	
-            	String injectorClass = aCfg.getString("inject_class");
-            	JobInjector jobInjector = null;
-            	if (injectorClass.equals("RandomBasedJobInjector")) {
-                    float injectProb =  (float) aCfg.getDouble("inject_prob");
-                	jobInjector = RandomBasedJobInjector.getInstance();
-                	((RandomBasedJobInjector) jobInjector).init(injectNum, injectProb, sxJobUtil, injectSeed);
-            	}
-            	else if (injectorClass.equals("MonthlyUrgentJobInjector")) {
-            		jobInjector = MonthlyUrgentJobInjector.getInstance();
-            		((MonthlyUrgentJobInjector) jobInjector).init(sxJobUtil, injectNum, injectSeed);
-            	}
-            	
+            	JobInjector jobInjector = new JobInjectorSingletonProxy(aCfg, sxJobUtil);
             	// Update total_gridlet of the set
             	total_gridlet[set] += injectNum;
             }
