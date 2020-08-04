@@ -6,30 +6,31 @@ import xklusac.environment.AleaConfiguration;
 public class JobInjectorSingletonProxy implements JobInjector {
 	
 	private static JobInjector jobInjector;
-	private SxAceJobUtil sxJobUtil;
 	
 	public JobInjectorSingletonProxy(AleaConfiguration aCfg) {
-		init(aCfg);
+		init(aCfg, null);
 	}
 	
 	public JobInjectorSingletonProxy(AleaConfiguration aCfg, SxAceJobUtil sxJobUtil) {
-		this(aCfg);
-		this.sxJobUtil = sxJobUtil;
+		init(aCfg, sxJobUtil);
 	}
 
-	public void init(AleaConfiguration aCfg) {
+	public void init(AleaConfiguration aCfg, SxAceJobUtil sxJobUtil) {
 		int injectNum =  aCfg.getInt("inject_num");
     	int injectSeed = aCfg.getInt("inject_randseed");
 		String injectorClass = aCfg.getString("inject_class");
 		
-    	if (injectorClass.equals("RandomBasedJobInjector")) {
+    	if (injectorClass.equals("RandomBasedJobInjector") && sxJobUtil != null) {
             float injectProb =  (float) aCfg.getDouble("inject_prob");
         	jobInjector = RandomBasedJobInjector.getInstance();
         	((RandomBasedJobInjector) jobInjector).init(injectNum, injectProb, sxJobUtil, injectSeed);
     	}
-    	else if (injectorClass.equals("MonthlyUrgentJobInjector")) {
+    	else if (injectorClass.equals("MonthlyUrgentJobInjector") && sxJobUtil != null) {
     		jobInjector = MonthlyUrgentJobInjector.getInstance();
     		((MonthlyUrgentJobInjector) jobInjector).init(sxJobUtil, injectNum, injectSeed);
+    	}
+    	else {
+    		throw new RuntimeException("JobInjector is not registered: " + injectorClass);
     	}
 	}
 
