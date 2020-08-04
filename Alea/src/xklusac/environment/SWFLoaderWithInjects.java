@@ -47,19 +47,24 @@ public class SWFLoaderWithInjects extends SWFLoader {
 			sim_get_next(ev);
 
 			if (ev.get_tag() == AleaSimTags.EVENT_WAKE) {
+				ComplexGridlet gl = null;
 				// Stop reading jobs from the file when the total number of jobs in the file have been reached
-				if (numGridletReads < (total_jobs - JobInjectorSingletonProxy.get().getTotalNumInjects())) {
-					ComplexGridlet gl = readGridlet(current_gl);
+				boolean fileFinished = (numGridletReads >= (total_jobs - JobInjectorSingletonProxy.get().getTotalNumInjects()));
+				if (!fileFinished) {
+					gl = readGridlet(current_gl);
 					current_gl++;
 					numGridletReads++;
+				}
 					
-					if (gl == null && current_gl < total_jobs) {
-						super.sim_schedule(this.getEntityId(this.getEntityName()), 0.0, AleaSimTags.EVENT_WAKE);
-						continue;
-					} else if (gl == null && current_gl >= total_jobs) {
-						continue;
-					}
-					
+				//if (gl == null && current_gl < total_jobs) {
+				if (gl == null && current_gl < total_jobs && !fileFinished) {
+					super.sim_schedule(this.getEntityId(this.getEntityName()), 0.0, AleaSimTags.EVENT_WAKE);
+					continue;
+				} else if (gl == null && current_gl >= total_jobs) {
+					continue;
+				}
+				
+				if (gl != null) {
 					currentArrival = gl.getArrival_time();
 					// to synchronize job arrival wrt. the data set.
 					double delay = Math.max(0.0, (gl.getArrival_time() - super.clock()));
@@ -68,6 +73,11 @@ public class SWFLoaderWithInjects extends SWFLoader {
 					// System.out.println("Sending: "+gl.getGridletID());
 					last_delay = delay;
 					super.sim_schedule(this.getEntityId("Alea_3.0_scheduler"), delay, AleaSimTags.GRIDLET_INFO, gl);
+				}
+				else {
+					// File finished but there are still pending injections
+					// Advance the current arrival time for one month
+					currentArrival += (3600*24*30);
 				}
 				
 				// Do injections
@@ -84,7 +94,7 @@ public class SWFLoaderWithInjects extends SWFLoader {
 					super.sim_schedule(this.getEntityId(this.getEntityName()), delay, AleaSimTags.EVENT_WAKE);
 				}
 
-				continue;
+				//continue;
 			}
 			
 			
