@@ -558,6 +558,9 @@ public class Scheduler extends GridSim {
          * all_queues.addLast(queue);
          }
          */
+        // Add Scheduler.queue to queue list s.t it can be monitored
+        all_queues.addLast(queue);
+        
         this.totalGridlet_ = total_gridlet;
         this.current_gl = 0;
 
@@ -797,7 +800,13 @@ public class Scheduler extends GridSim {
                 }
                 //System.out.println(">>> " + in_job_counter + " so far arrived, in queue = " + getQueueSize() + " jobs, at time = " + Math.round(clock())+" running = "+getRunningJobs()+" FREE = "+getFreeCPUs()+" last jobID = "+idd);
                 //System.out.println(in_job_counter + " arrived, waiting = " + getScheduleSize() + " simtime = " + Math.round(clock()) + " running = " + getRunningJobs() + " FREE = " + getFreeCPUs() + " last jobID = " + last_job_id);
+                //if (algorithm == 24 || algorithm == 25) {
+                	// UJF-based algorithms use Scheduler.queue
+                //	ExperimentSetup.result_collector.doLoggers(resourceInfoList, queue.size(), null);
+                //}
+                //else {
                 ExperimentSetup.result_collector.doLoggers(resourceInfoList, getQueueSize(), null);
+                //}
                 //super.sim_schedule(this.getEntityId(this.getEntityName()), (3 * 3600.0), AleaSimTags.LOG_SCHEDULER);
                 // Invoke logger hourly
                 super.sim_schedule(this.getEntityId(this.getEntityName()), 3600.0, AleaSimTags.LOG_SCHEDULER);
