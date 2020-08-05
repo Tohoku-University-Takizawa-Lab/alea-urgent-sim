@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package agung.plugins.urgent;
 
 import xklusac.environment.ComplexGridlet;
@@ -19,7 +14,6 @@ public class TotalPreemptionPlugin extends AbstractPlugin implements Plugin {
 
 	private int numPreemptions;
 	private int numPreemptedJobs;
-	
 	
     public TotalPreemptionPlugin() {
 		super();
