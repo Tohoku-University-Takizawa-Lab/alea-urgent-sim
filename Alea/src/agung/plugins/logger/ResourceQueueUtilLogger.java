@@ -42,14 +42,16 @@ public class ResourceQueueUtilLogger implements JobResourceInfoLogger {
 		}
 		//long numBusy = numTotal - numFree;
 		//double utilization = numBusy / (double) numTotal;
-		double utilization = numBusy / (double) (numBusy + numFree);
-		
-		try {
-			outputWriter.append(hour + "," + numBusy + "," + numFree + "," 
-					+ String.format("%.2f", utilization) + "," + queueSize + "\n");
-			outputWriter.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if ((numBusy + numFree) > 0) {		// This is a workaround when GridSim return 0 for both counters
+			double utilization = numBusy / (double) (numBusy + numFree);
+			
+			try {
+				outputWriter.append(hour + "," + numBusy + "," + numFree + "," 
+						+ String.format("%.2f", utilization) + "," + queueSize + "\n");
+				outputWriter.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
