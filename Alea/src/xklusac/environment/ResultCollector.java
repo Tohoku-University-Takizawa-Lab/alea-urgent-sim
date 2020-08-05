@@ -402,7 +402,7 @@ public class ResultCollector {
             this.pwt = new PrintWriter(new FileWriter(FileUtil.getPath(user_dir + "/throughput(" + problem + "" + ExperimentSetup.algID + ").csv")), true);
 
             //out.writeStringWriter(pw, "giID \t arrival \t wait \t runtime \t CPUs \t RAM \t userID \t queue \t walltime_limit \t urgency \t nPreempted");
-            out.writeStringWriter(pw, "giID\tarrival\twait\truntime\tCPUs\tRAM\tuserID\tqueue\twalltime_limit\turgency\tnPreempted");
+            out.writeStringWriter(pw, "giID\tarrival\twait\truntime\tCPUs\tRAM\tuserID\tqueue\twalltime_limit\tresponse\turgency\tnPreempted");
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -466,7 +466,8 @@ public class ResultCollector {
             }
             
             arrival = gi.getGridlet().getArrival_time();
-            mips = gridlet_received.getGridletLength();
+            //mips = gridlet_received.getGridletLength();
+            mips = gridlet_received.getOriginalLength();
             double succ_resp = Math.max(0.0, (finish_time - arrival));
             succ_flow += succ_resp;
             succ_wait += Math.max(0.0, (succ_resp - cpu_time));
@@ -534,9 +535,10 @@ public class ResultCollector {
             String line = gridlet_received.getGridletID() + "\t" + Math.round(gi.getRelease_date()) + "\t" 
             		+ Math.round(Math.max(0.0, (response - cpu_time)) * 10) / 10.0
                     + "\t" + Math.round(cpu_time * 10) / 10.0 + "\t" + gi.getNumPE() + "\t" + gi.getRam() 
-                    + "\t" + gi.getUser() + "\t" + gi.getQueue() + "\t" + gi.getJobLimit() + "\t" + gi.getUrgency() 
-                    +"\t" + gi.getGridlet().getNumPreempted();
-
+                    + "\t" + gi.getUser() + "\t" + gi.getQueue() + "\t" + gi.getJobLimit() 
+                    + "\t" + Math.round(response * 100) / 100.0 + "\t" + gi.getUrgency() 
+                    + "\t" + gi.getGridlet().getNumPreempted();
+            
             //out.writeStringWriter(user_dir + "/jobs" + prob + ".csv", line.replace(".", ","));
             // Write in format used in many non-English countries
             //out.writeStringWriter(pw, line.replace(".", ","));
