@@ -53,4 +53,9 @@ public class JobInjectorSingletonProxy implements JobInjector {
         return jobInjector;
 	}
 
+	@Override
+	public double getLastJobArrival() {
+		return jobInjector.getLastJobArrival();
+	}
+
 }

@@ -13,6 +13,7 @@ public class RandomBasedJobInjector implements JobInjector {
 	private int numInjectsNow = 0;
 	private float injectProb;
 	private Random injectRand;
+	private double lastJobArrival;
 	
 	
 	public void init(int numInjects, float injectProb, SxAceJobUtil sxJobUtil, long randSeed) {
@@ -39,6 +40,7 @@ public class RandomBasedJobInjector implements JobInjector {
 	        
 			//current_gl++;
 			numInjectsNow++;
+			lastJobArrival = arrivalTime;
 			//if (gl == null) {
 			//	super.sim_schedule(this.getEntityId(this.getEntityName()), 0.0, AleaSimTags.EVENT_WAKE);
 			//}
@@ -75,5 +77,11 @@ public class RandomBasedJobInjector implements JobInjector {
 	@Override
 	public int getTotalNumInjects() {
 		return numInjects;
+	}
+
+
+	@Override
+	public double getLastJobArrival() {
+		return lastJobArrival;
 	}
 }

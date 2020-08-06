@@ -15,6 +15,7 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 	private int lastMonthInjected;
 	private int numInjects;
 	private int currentNumInjects;
+	private double lastJobArrival;
 	
 	public void init(SxAceJobUtil sxJobUtil, int numInjects, long randSeed) {
 		if (randSeed > 0)
@@ -59,8 +60,9 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 					injected++;
 					currentNumInjects++;
 				}
-				
 			}
+			if (injected > 0)
+				lastJobArrival = arrivalTime;
 		}
 		return injected;
 	}
@@ -113,5 +115,10 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 	@Override
 	public int getTotalNumInjects() {
 		return numInjects;
+	}
+
+	@Override
+	public double getLastJobArrival() {
+		return lastJobArrival;
 	}
 }

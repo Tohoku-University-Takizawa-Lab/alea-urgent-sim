@@ -87,9 +87,14 @@ public class SWFLoaderWithInjects extends SWFLoader {
 					numInjected = JobInjectorSingletonProxy.get().injectJobs(
 							this, currentArrival, maxPErating, remaining);
 				}
-				current_gl += numInjected;
-				numUrgentJobs += numInjected;
-				numInjectsTotal += numInjected;
+				
+				if (numInjected > 0) {
+					current_gl += numInjected;
+					numUrgentJobs += numInjected;
+					numInjectsTotal += numInjected;
+					if (fileFinished)
+						currentArrival = JobInjectorSingletonProxy.get().getLastJobArrival();
+				}
 				
 				double delay = Math.max(0.0, (currentArrival - super.clock()));
 				if (current_gl < total_jobs) {
