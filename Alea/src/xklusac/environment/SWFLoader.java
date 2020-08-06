@@ -455,7 +455,7 @@ public class SWFLoader extends GridSim {
         
         // Setting urgency
         int urgency = 0;   // Default urgency
-        if (data_set.contains("SDSC-DS")) {
+        if (data_set.contains("SDSC-DS-urgentq")) {
             //System.out.println(queue);
             if (queue.equals("0") || queue.equals("1")) {
                 urgency = UrgentGridletUtil.DEFAULT_URGENCY;
