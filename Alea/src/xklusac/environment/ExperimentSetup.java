@@ -700,7 +700,9 @@ public class ExperimentSetup {
             }*/
             
             // Create job injection loader for specific data sets
-            if (data_sets[set].contains("inject.swf")) {
+            boolean useInjection = data_sets[set].contains("inject.swf");
+            SxAceJobUtil sxJobUtil = null;
+            if (useInjection) {
             	int injectNum =  aCfg.getInt("inject_num");
             	
             	if (injectNum < 0) {
@@ -712,8 +714,8 @@ public class ExperimentSetup {
             	int numNodesMin = aCfg.getInt("inject_jobnodes_min");
             	int numNodesMax = aCfg.getInt("inject_jobnodes_max");
             	int injectSeed = aCfg.getInt("inject_randseed");
-            	SxAceJobUtil sxJobUtil = new SxAceJobUtil(jobLenMin, jobLenMax, numNodesMin, numNodesMax, injectSeed);
-            	JobInjector jobInjector = new JobInjectorSingletonProxy(aCfg, sxJobUtil);
+            	sxJobUtil = new SxAceJobUtil(jobLenMin, jobLenMax, numNodesMin, numNodesMax, injectSeed);
+            	//JobInjector jobInjector = new JobInjectorSingletonProxy(aCfg, sxJobUtil);
             	// Update total_gridlet of the set
             	total_gridlet[set] += injectNum;
             }
@@ -756,6 +758,9 @@ public class ExperimentSetup {
                 
                 // initialize the simulation - create the scheduler
                 
+                // Initialize the JobInjector instance for every scheduler
+                if (useInjection)
+                	new JobInjectorSingletonProxy(aCfg, sxJobUtil);
                 
                 String scheduler_name = "Alea_3.0_scheduler";
                 try {
