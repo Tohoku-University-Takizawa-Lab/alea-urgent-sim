@@ -16,6 +16,7 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 	private int numInjects;
 	private int currentNumInjects;
 	private double lastJobArrival;
+	private int numInjectsPerMonth;
 	
 	public void init(SxAceJobUtil sxJobUtil, int numInjects, long randSeed) {
 		if (randSeed > 0)
@@ -26,6 +27,12 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 		this.lastMonthInjected = 0;
 		this.numInjects = numInjects;
 		this.currentNumInjects = 0;
+		this.numInjectsPerMonth = 1;
+	}
+	
+	public void init(SxAceJobUtil sxJobUtil, int numInjects, long randSeed, int numInjectsPerMonth) {
+		init(sxJobUtil, numInjectsPerMonth, randSeed);
+		this.numInjectsPerMonth = numInjectsPerMonth;
 	}
 
 	@Override
@@ -37,18 +44,20 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 			//long currentDay = Math.round(currentArrivalTime / (3600*24));
 			int currentMonth = (int) Math.ceil((double) currentDay / MONTH_DAYS);
 			int relativeDay = currentDay % MONTH_DAYS;
-			int randDay = injectRand.nextInt(MONTH_DAYS - relativeDay + 1) + relativeDay;
-			double arrivalTime = (((currentMonth-1) * MONTH_DAYS) + randDay) * 3600 * 24;
 			
+			double arrivalTime = currentArrivalTime;
 			//if (currentMonth > lastMonthInjected && currentNumInjects < numInjects) {
 			if (currentMonth > lastMonthInjected) {
 				//if (numInjectsNow < numInjects && injectRand.nextFloat() <= injectProb) {
 				//int relativeDay = currentDay % MONTH_DAYS;
 				//int randDay = injectRand.nextInt(MONTH_DAYS - relativeDay + 1) + relativeDay;
 				//double arrivalTime = (((currentMonth-1) * MONTH_DAYS) + randDay) * 3600 * 24;
-				generateSendJob(gridsim, arrivalTime, ratingPE, currentMonth, relativeDay);
-				injected++;
-				currentNumInjects++;
+				for (int i = 0; i < numInjectsPerMonth; i++) {
+					arrivalTime = nextRandomArrivalFrom(currentMonth, relativeDay);
+					generateSendJob(gridsim, arrivalTime, ratingPE, currentMonth, relativeDay);
+					injected++;
+					currentNumInjects++;
+				}
 				lastMonthInjected = currentMonth;
 			}
 			else if (numJobs > 1) {
@@ -56,6 +65,7 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 				// So, let's put the remaining injections on the current month.
 				//int numRemaining = numInjects - currentNumInjects;
 				for (int i = 0; i < numJobs; i++) {
+					arrivalTime = nextRandomArrivalFrom(currentMonth, relativeDay);
 					generateSendJob(gridsim, arrivalTime, ratingPE, currentMonth, relativeDay);
 					injected++;
 					currentNumInjects++;
@@ -120,5 +130,11 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 	@Override
 	public double getLastJobArrival() {
 		return lastJobArrival;
+	}
+	
+	private double nextRandomArrivalFrom(int currentMonth, int fromDay) {
+		int randDay = injectRand.nextInt(MONTH_DAYS - fromDay + 1) + fromDay;
+		double arrivalTime = (((currentMonth-1) * MONTH_DAYS) + randDay) * 3600 * 24;
+		return arrivalTime;
 	}
 }

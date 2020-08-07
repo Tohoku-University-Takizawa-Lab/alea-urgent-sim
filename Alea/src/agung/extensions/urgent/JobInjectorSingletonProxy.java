@@ -26,8 +26,12 @@ public class JobInjectorSingletonProxy implements JobInjector {
         	((RandomBasedJobInjector) jobInjector).init(injectNum, injectProb, sxJobUtil, injectSeed);
     	}
     	else if (injectorClass.equals("MonthlyUrgentJobInjector") && sxJobUtil != null) {
+    		int injectNumPerMonth =  aCfg.getInt("inject_num_monthly");
     		jobInjector = MonthlyUrgentJobInjector.getInstance();
-    		((MonthlyUrgentJobInjector) jobInjector).init(sxJobUtil, injectNum, injectSeed);
+    		if (injectNumPerMonth > 1)
+    			((MonthlyUrgentJobInjector) jobInjector).init(sxJobUtil, injectNum, injectSeed, injectNumPerMonth);
+    		else
+    			((MonthlyUrgentJobInjector) jobInjector).init(sxJobUtil, injectNum, injectSeed);
     	}
     	else {
     		throw new RuntimeException("JobInjector is not registered: " + injectorClass);
