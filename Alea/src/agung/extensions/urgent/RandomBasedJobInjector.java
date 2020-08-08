@@ -1,7 +1,5 @@
 package agung.extensions.urgent;
 
-import java.util.Random;
-
 import alea.core.AleaSimTags;
 import gridsim.GridSim;
 import xklusac.environment.ComplexGridlet;
@@ -9,28 +7,24 @@ import xklusac.environment.ComplexGridlet;
 public class RandomBasedJobInjector implements JobInjector {
 
 	private SxAceJobUtil sxJobUtil;
-	private int numInjects;
-	private int numInjectsNow = 0;
+	//private int numInjects;
+	//private int numInjectsNow = 0;
 	private float injectProb;
-	private Random injectRand;
+	private RNG injectRand;
 	private double lastJobArrival;
 	
-	
-	public void init(int numInjects, float injectProb, SxAceJobUtil sxJobUtil, long randSeed) {
-		this.numInjects = numInjects;
+	public void init(float injectProb, SxAceJobUtil sxJobUtil, RNG rng) {
+		//this.numInjects = numInjects;
 		this.injectProb = injectProb;
-		if (randSeed > 0)
-			this.injectRand = new Random(randSeed);
-		else
-			this.injectRand = new Random();
+		this.injectRand = rng;
 		this.sxJobUtil = sxJobUtil;
 	}
-
-
+	
 	@Override
 	public int injectJobs(GridSim gridsim, double arrivalTime, int ratingPE, int numJobs) {
 		int injected = 0;
-		if (numInjectsNow < numInjects && injectRand.nextFloat() <= injectProb) {
+		//if (numInjectsNow < numInjects && injectRand.nextFloat() <= injectProb) {
+		if (injectRand.nextFloat() <= injectProb) {
 			
 			ComplexGridlet gl = sxJobUtil.generateUrgentJob(arrivalTime, ratingPE);
 			
@@ -39,7 +33,7 @@ public class RandomBasedJobInjector implements JobInjector {
 	        gl.setUserID(gridsim.getEntityId("Alea_3.0_scheduler"));
 	        
 			//current_gl++;
-			numInjectsNow++;
+			//numInjectsNow++;
 			lastJobArrival = arrivalTime;
 			//if (gl == null) {
 			//	super.sim_schedule(this.getEntityId(this.getEntityName()), 0.0, AleaSimTags.EVENT_WAKE);
@@ -51,6 +45,9 @@ public class RandomBasedJobInjector implements JobInjector {
 			//System.out.println("- Inject urgent job: "+ gl.getGridletID());
 			//last_delay = delay;
 			gridsim.sim_schedule(gridsim.getEntityId("Alea_3.0_scheduler"), delay, AleaSimTags.GRIDLET_INFO, gl);
+			
+			System.out.println("- Inject urgent job #"+ gl.getGridletID() + " at " + gl.getArrival_time() 
+				+ ", numPE = " + gl.getNumPE() + ", length = " + gl.getGridletLength());
 
 			//delay = Math.max(0.0, (gl.getArrival_time() - super.clock()));
 			//if (current_gl < total_jobs) {
@@ -76,12 +73,18 @@ public class RandomBasedJobInjector implements JobInjector {
 
 	@Override
 	public int getTotalNumInjects() {
-		return numInjects;
+		return -1;
 	}
 
 
 	@Override
 	public double getLastJobArrival() {
 		return lastJobArrival;
+	}
+
+	@Override
+	public boolean isFinished() {
+		// Always finished because it depends on the job traces
+		return true;
 	}
 }

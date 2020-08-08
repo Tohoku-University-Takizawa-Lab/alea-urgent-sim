@@ -703,11 +703,11 @@ public class ExperimentSetup {
             boolean useInjection = data_sets[set].contains("inject.swf");
             SxAceJobUtil sxJobUtil = null;
             if (useInjection) {
-            	int injectNum =  aCfg.getInt("inject_num");
+            	//int injectNum =  aCfg.getInt("inject_num");
             	
-            	if (injectNum < 0) {
-            		throw new RuntimeException("Invalid inject_num configuration! (must be >= 0)");
-            	}
+            	//if (injectNum < 0) {
+            	//	throw new RuntimeException("Invalid inject_num configuration! (must be >= 0)");
+            	//}
             		
             	long jobLenMin = (long) aCfg.getDouble("inject_joblen_min");
             	long jobLenMax = (long) aCfg.getDouble("inject_joblen_max");
@@ -717,7 +717,7 @@ public class ExperimentSetup {
             	sxJobUtil = new SxAceJobUtil(jobLenMin, jobLenMax, numNodesMin, numNodesMax, injectSeed);
             	//JobInjector jobInjector = new JobInjectorSingletonProxy(aCfg, sxJobUtil);
             	// Update total_gridlet of the set
-            	total_gridlet[set] += injectNum;
+            	//total_gridlet[set] += injectNum;
             }
             
             int algorithms[] = aCfg.getIntArray("algorithms");

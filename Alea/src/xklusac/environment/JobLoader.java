@@ -56,7 +56,7 @@ public class JobLoader {
             if(set.contains("gwf")){
                 GWFLoader gwa_loader = new GWFLoader(name, baudRate, total_jobs, data_set, maxPE, minPErating, maxPErating);                
             }else if (set.contains("inject.swf")) {
-            	SWFLoaderWithInjects swfwi_loader = new SWFLoaderWithInjects(name, baudRate, total_jobs, data_set, maxPE, minPErating, maxPErating);
+            	SWFLoaderInjection swfwi_loader = new SWFLoaderInjection(name, baudRate, total_jobs, data_set, maxPE, minPErating, maxPErating);
             }
             else if(set.contains("swf")){
                 SWFLoader pwa_loader = new SWFLoader(name, baudRate, total_jobs, data_set, maxPE, minPErating, maxPErating);

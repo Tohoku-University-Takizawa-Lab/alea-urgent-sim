@@ -1,7 +1,5 @@
 package agung.extensions.urgent;
 
-import java.util.Random;
-
 import alea.core.AleaSimTags;
 import gridsim.GridSim;
 import xklusac.environment.ComplexGridlet;
@@ -11,27 +9,24 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 	private static final int MONTH_DAYS = 30;
 	
 	private SxAceJobUtil sxJobUtil;
-	private Random injectRand;
+	//private Random injectRand;
+	private RNG injectRand;
 	private int lastMonthInjected;
-	private int numInjects;
-	private int currentNumInjects;
+	//private int numInjects;
+	//private int currentNumInjects;
 	private double lastJobArrival;
 	private int numInjectsPerMonth;
 	
-	public void init(SxAceJobUtil sxJobUtil, int numInjects, long randSeed) {
-		if (randSeed > 0)
-			this.injectRand = new Random(randSeed);
-		else
-			this.injectRand = new Random();
-		this.sxJobUtil = sxJobUtil;
-		this.lastMonthInjected = 0;
-		this.numInjects = numInjects;
-		this.currentNumInjects = 0;
-		this.numInjectsPerMonth = 1;
+	public void init(SxAceJobUtil sxJobUtil, RNG rng) {
+		init(sxJobUtil, rng, 1);
 	}
 	
-	public void init(SxAceJobUtil sxJobUtil, int numInjects, long randSeed, int numInjectsPerMonth) {
-		init(sxJobUtil, numInjectsPerMonth, randSeed);
+	public void init(SxAceJobUtil sxJobUtil, RNG rng, int numInjectsPerMonth) {
+		this.injectRand = rng;
+		this.sxJobUtil = sxJobUtil;
+		this.lastMonthInjected = 0;
+		//this.numInjects = numInjects;
+		//this.currentNumInjects = 0;
 		this.numInjectsPerMonth = numInjectsPerMonth;
 	}
 
@@ -39,7 +34,7 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 	public int injectJobs(GridSim gridsim, double currentArrivalTime, int ratingPE, int numJobs) {
 		int injected = 0;
 		
-		if (currentNumInjects < numInjects) {
+		//if (currentNumInjects < numInjects) {
 			int currentDay = (int) Math.ceil(currentArrivalTime / (3600*24));
 			//long currentDay = Math.round(currentArrivalTime / (3600*24));
 			int currentMonth = (int) Math.ceil((double) currentDay / MONTH_DAYS);
@@ -53,10 +48,10 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 				//int randDay = injectRand.nextInt(MONTH_DAYS - relativeDay + 1) + relativeDay;
 				//double arrivalTime = (((currentMonth-1) * MONTH_DAYS) + randDay) * 3600 * 24;
 				for (int i = 0; i < numInjectsPerMonth; i++) {
-					arrivalTime = nextRandomArrivalFrom(currentMonth, relativeDay);
-					generateSendJob(gridsim, arrivalTime, ratingPE, currentMonth, relativeDay);
+					//arrivalTime = nextRandomArrivalFrom(currentMonth, relativeDay);
+					generateSendJob(gridsim, ratingPE, currentMonth, relativeDay);
 					injected++;
-					currentNumInjects++;
+					//currentNumInjects++;
 				}
 				lastMonthInjected = currentMonth;
 			}
@@ -65,21 +60,23 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 				// So, let's put the remaining injections on the current month.
 				//int numRemaining = numInjects - currentNumInjects;
 				for (int i = 0; i < numJobs; i++) {
-					arrivalTime = nextRandomArrivalFrom(currentMonth, relativeDay);
-					generateSendJob(gridsim, arrivalTime, ratingPE, currentMonth, relativeDay);
+					//arrivalTime = nextRandomArrivalFrom(currentMonth, relativeDay);
+					generateSendJob(gridsim, ratingPE, currentMonth, relativeDay);
 					injected++;
-					currentNumInjects++;
+					//currentNumInjects++;
 				}
 			}
 			if (injected > 0)
 				lastJobArrival = arrivalTime;
-		}
+		//}
 		return injected;
 	}
 
-	private void generateSendJob(GridSim gridsim, double arrivalTime, int ratingPE,
+	private void generateSendJob(GridSim gridsim, int ratingPE,
 			int currentMonth, int relativeDay) {
 		//int succeedInjected = 0;
+		int arrivalDay = nextRandomDay(currentMonth, relativeDay);
+		double arrivalTime = toArrival(currentMonth, arrivalDay);
 		
 		ComplexGridlet gl = sxJobUtil.generateUrgentJob(arrivalTime, ratingPE);
 		
@@ -96,7 +93,7 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 		double delay = Math.max(0.0, (gl.getArrival_time() - gridsim.clock()));
 		// some time is needed to transfer this job to the scheduler, i.e., delay should
 		System.out.println("- Inject urgent job #"+ gl.getGridletID() 
-				+ " at month-" + currentMonth + ", day-"+ relativeDay + " (" 
+				+ " at month-" + currentMonth + ", day-"+ arrivalDay + " (" 
 				+ gl.getArrival_time() +")" + ", numPE = " + gl.getNumPE() 
 				+ ", length = " + gl.getGridletLength());
 		//last_delay = delay;
@@ -124,7 +121,7 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 
 	@Override
 	public int getTotalNumInjects() {
-		return numInjects;
+		return -1;
 	}
 
 	@Override
@@ -136,5 +133,19 @@ public class MonthlyUrgentJobInjector implements JobInjector {
 		int randDay = injectRand.nextInt(MONTH_DAYS - fromDay + 1) + fromDay;
 		double arrivalTime = (((currentMonth-1) * MONTH_DAYS) + randDay) * 3600 * 24;
 		return arrivalTime;
+	}
+	
+	private int nextRandomDay(int currentMonth, int fromDay) {
+		return injectRand.nextInt(MONTH_DAYS - fromDay + 1) + fromDay;
+	}
+	
+	private double toArrival(int month, int day) {
+		return (((month-1) * MONTH_DAYS) + day) * 3600 * 24;
+	}
+
+	@Override
+	public boolean isFinished() {
+		// Always finished when called because it depends on job traces
+		return true;
 	}
 }

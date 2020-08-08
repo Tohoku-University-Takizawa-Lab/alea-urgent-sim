@@ -20,6 +20,7 @@ import xklusac.extensions.*;
  * object represents one Resource.
  *
  * @author Dalibor Klusacek
+ * @author Mulya Agung
  */
 public class Scheduler extends GridSim {
 
@@ -1215,6 +1216,17 @@ public class Scheduler extends GridSim {
             }
         }
         return size;
+    }
+    
+    public static double getCPUUtilization() {
+		int busy = 0;
+		int free = 0;
+		for (Object o: resourceInfoList) {
+			ResourceInfo ri = (ResourceInfo) o;
+	        busy += ri.getNumBusyPE();
+	        free += ri.getNumFreePE();
+	    }
+    	return (busy / Math.max(1.0, (double)(busy + free)));
     }
 
     /**
