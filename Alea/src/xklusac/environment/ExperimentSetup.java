@@ -40,6 +40,7 @@ import agung.algorithms.urgent.UrgentFirstCONS;
 import agung.extensions.urgent.ConstantSwapTime;
 import agung.extensions.urgent.JobInjector;
 import agung.extensions.urgent.JobInjectorSingletonProxy;
+import agung.extensions.urgent.JobSizeSwapTime;
 import agung.extensions.urgent.JobSwapper;
 import agung.extensions.urgent.MonthlyUrgentJobInjector;
 import agung.extensions.urgent.RandomBasedJobInjector;
@@ -984,6 +985,13 @@ public class ExperimentSetup {
                 			
                 		System.out.format("- Random swap time will be used for preemption: %.2f-%.2f s\n",
                 				swapoutMinTime, swapoutMaxTime);
+                	}
+                	else if (swapTimeGenType.equalsIgnoreCase("jobsize")) {
+                		double swapinUnit =  aCfg.getDouble("jobsize_swap_time.unit_in");
+                		double swapoutUnit =  aCfg.getDouble("jobsize_swap_time.unit_out");
+                		swapTimeGen = new JobSizeSwapTime(swapinUnit, swapoutUnit);
+                		System.out.format("- Job size-based swap time will be used for preemption: (%.2f, %.2f) s\n",
+                				swapinUnit, swapoutUnit);
                 	}
                 	else {
                 		double swapinTime =  aCfg.getDouble("constant_swap_time.swapin");

@@ -53,7 +53,7 @@ public class JobSwapper {
 	}
 	
 	public Result swapout(GridletInfo gi, ResourceInfo ri) {
-		double delay = delayGen.genSwapoutTime();
+		double delay = delayGen.genSwapoutTime(gi.getGridlet());
 		// Emulating the swapping time with GridSim delay
 		// 1. Pause no delay
 		// 2. Resume with delay of swap
@@ -94,7 +94,7 @@ public class JobSwapper {
 	}
 	
 	public double swapin(GridletInfo gi, ResourceInfo ri) {
-		double delay = delayGen.genSwapinTime();
+		double delay = delayGen.genSwapinTime(gi.getGridlet());
 		gi.setSuspended(false);
 		scheduler.submitJobWithDelay(gi.getGridlet(), ri.resource.getResourceID(), delay);
 		gi.getGridlet().addTotalSwapDelay(delay);

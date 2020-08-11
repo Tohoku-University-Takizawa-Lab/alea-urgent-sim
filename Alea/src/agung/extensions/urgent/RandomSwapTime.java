@@ -2,6 +2,8 @@ package agung.extensions.urgent;
 
 import java.util.Random;
 
+import xklusac.environment.ComplexGridlet;
+
 public class RandomSwapTime implements SwapTimeGen {
 
 	// Time needed for swapping in (in seconds)
@@ -25,12 +27,12 @@ public class RandomSwapTime implements SwapTimeGen {
 	}
 	
 	@Override
-	public double genSwapinTime() {
+	public double genSwapinTime(ComplexGridlet gl) {
 		return inRangeMin + (inRangeMax - inRangeMin) * random.nextDouble();
 	}
 
 	@Override
-	public double genSwapoutTime() {
+	public double genSwapoutTime(ComplexGridlet gl) {
 		return outRangeMin + (outRangeMax - outRangeMin) * random.nextDouble();
 	}
 

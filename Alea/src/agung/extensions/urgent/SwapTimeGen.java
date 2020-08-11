@@ -1,5 +1,7 @@
 package agung.extensions.urgent;
 
+import xklusac.environment.ComplexGridlet;
+
 /**
  * Interface of swapping time generator.
  * Provides times for swapin and swapout.
@@ -7,6 +9,6 @@ package agung.extensions.urgent;
  *
  */
 public interface SwapTimeGen {
-	double genSwapinTime();
-	double genSwapoutTime();
+	double genSwapinTime(ComplexGridlet gl);
+	double genSwapoutTime(ComplexGridlet gl);
 }
