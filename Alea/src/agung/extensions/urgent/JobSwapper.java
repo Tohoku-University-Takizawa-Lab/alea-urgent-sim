@@ -85,6 +85,10 @@ public class JobSwapper {
 			gi.getGridlet().setEstimatedLength(gi.getGridlet().getEstimatedLength() - 
 					gi.getGridlet().getGridletFinishedSoFar());
 			gi.getGridlet().setGridletFinishedSoFar(0.0);
+			
+			System.out.println("[JobSwapper] swapped out job-" + gi.getID() 
+					+ ", RAM=" + gi.getRam() + ", PE=" + gi.getNumPE() 
+					+ ", numNodes=" + gi.getNumNodes() + ", delay=" + delay);
 		}
 		else {
 			// Finished before it is canceled.

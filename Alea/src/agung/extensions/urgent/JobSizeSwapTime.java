@@ -15,9 +15,9 @@ public class JobSizeSwapTime implements SwapTimeGen {
 		this.outDelayPerUnit = outDelayPerUnit;
 	}
 	
-	private long jobUnit(ComplexGridlet gl) {
+	private double jobUnit(ComplexGridlet gl) {
 		if (gl.getRam() > 1) {
-			int ramGB = Math.max(1, (int) Math.ceil(gl.getRam() / MB_UNIT));
+			double ramGB = Math.max(1.0, gl.getRam() / MB_UNIT);
 			if (gl.getNumNodes() > 0)
 				return ramGB * gl.getNumNodes();
 			else
