@@ -560,6 +560,9 @@ public class ResultCollector {
                 break;
             }
         }
+        
+        // Do job loggers if any
+        doLoggers(null, -1, gridlet_received);
 
     }
 
@@ -892,7 +895,7 @@ public class ResultCollector {
 	}
 
 	public void doLoggers(List<ResourceInfo> infos, long queueSize, ComplexGridlet gl) {
-		if (!infos.isEmpty()) {
+		if (infos != null && !infos.isEmpty()) {
 	    	for (JobResourceInfoLogger logger: logPlugins) {
 	    		logger.logResources(GridSim.clock(), infos, queueSize);
 	    	}

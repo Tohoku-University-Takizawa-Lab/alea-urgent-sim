@@ -19,6 +19,7 @@ import xklusac.environment.ResourceInfo;
 public class UrgentGridletUtil {
     
     public static final int DEFAULT_URGENCY = 999;
+    public static double defaultDeadlineRatio = 1.0;
     
     public static boolean isUrgent(ComplexGridlet gl) {
         return gl.getUrgency() == DEFAULT_URGENCY;
@@ -26,6 +27,14 @@ public class UrgentGridletUtil {
     
     public static boolean isUrgent(GridletInfo gi) {
         return gi.getUrgency() == DEFAULT_URGENCY;
+    }
+    
+    public static void setDefaultDeadlineRatio(double val) {
+    	UrgentGridletUtil.defaultDeadlineRatio = val;
+    }
+    
+    public static double getDefaultDeadlineRatio() {
+    	return defaultDeadlineRatio;
     }
     
     public static boolean isUrgentJobsSorted(List<GridletInfo> infos) {

@@ -47,6 +47,7 @@ import agung.extensions.urgent.RandomBasedJobInjector;
 import agung.extensions.urgent.RandomSwapTime;
 import agung.extensions.urgent.SwapTimeGen;
 import agung.extensions.urgent.SxAceJobUtil;
+import agung.extensions.urgent.UrgentGridletUtil;
 import agung.plugins.logger.JobResourceInfoLogger;
 import agung.plugins.logger.InfoLoggerFactory;
 import xklusac.extensions.*;
@@ -719,6 +720,8 @@ public class ExperimentSetup {
             	//JobInjector jobInjector = new JobInjectorSingletonProxy(aCfg, sxJobUtil);
             	// Update total_gridlet of the set
             	//total_gridlet[set] += injectNum;
+            	double injectDeadlineRatio = aCfg.getDouble("inject_deadline_ratio");
+            	UrgentGridletUtil.setDefaultDeadlineRatio(injectDeadlineRatio);
             }
             
             int algorithms[] = aCfg.getIntArray("algorithms");
