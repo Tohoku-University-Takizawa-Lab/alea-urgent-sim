@@ -71,7 +71,7 @@ public class Output{
     	String path = FileUtil.getPath(filename);
     	File file = new File(path);
     	file.delete();
-    	System.out.println("File " + filename + " has been deleted.");
+    	//System.out.println("File " + path + " has been deleted.");
     }
     
     public void closeWriter(PrintWriter pw)
