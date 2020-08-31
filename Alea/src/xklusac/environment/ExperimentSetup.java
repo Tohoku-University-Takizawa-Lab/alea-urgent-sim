@@ -716,7 +716,11 @@ public class ExperimentSetup {
             	int numNodesMin = aCfg.getInt("inject_jobnodes_min");
             	int numNodesMax = aCfg.getInt("inject_jobnodes_max");
             	int injectSeed = aCfg.getInt("inject_randseed");
-            	sxJobUtil = new SxAceJobUtil(jobLenMin, jobLenMax, numNodesMin, numNodesMax, injectSeed);
+            	boolean useJobMap = aCfg.getBoolean("inject_use_jobs_map");
+            	String jobsMapStr= aCfg.getString("inject_jobs_map");
+            	
+            	sxJobUtil = new SxAceJobUtil(jobLenMin, jobLenMax, numNodesMin, numNodesMax, injectSeed, useJobMap);
+            	sxJobUtil.setLengthNodeMapStr(jobsMapStr);
             	//JobInjector jobInjector = new JobInjectorSingletonProxy(aCfg, sxJobUtil);
             	// Update total_gridlet of the set
             	//total_gridlet[set] += injectNum;

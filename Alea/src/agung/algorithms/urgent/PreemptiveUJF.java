@@ -112,7 +112,8 @@ public class PreemptiveUJF extends UJF {
 	                        	// Remember that UJF uses the single queue of scheduler 
 		                        int actual_idx = 0;
 		                        if (Scheduler.queue.size() > 0) {
-			                        while (UrgentGridletUtil.isUrgent(Scheduler.queue.get(actual_idx))) {
+			                        while (actual_idx < Scheduler.queue.size() 
+			                        		&& UrgentGridletUtil.isUrgent(Scheduler.queue.get(actual_idx))) {
 			                            actual_idx++;
 			                        }
 		                        }

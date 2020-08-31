@@ -90,7 +90,8 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
 		                        // Put the preempted job into the earliest queue of regular jobs
 		                        int actual_idx = 0;
 		                        if (ri.resSchedule.size() > 0) {
-			                        while (UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
+			                        while (actual_idx < ri.resSchedule.size() 
+			                        		&& UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
 			                            actual_idx++;
 			                        }
 		                        }
