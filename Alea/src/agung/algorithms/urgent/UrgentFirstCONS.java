@@ -103,8 +103,12 @@ public class UrgentFirstCONS extends CONS {
               ri.removeGInfo(gi);
               // Put later than existing urgent jobs
               int actual_idx = 0;
-              while (UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
-                  actual_idx++;
+              //while (UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
+              //   actual_idx++;
+              //}
+              while (actual_idx < ri.resSchedule.size() 
+              		&& UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
+            	  actual_idx++;
               }
               ri.addGInfo(actual_idx, gi);
               System.out.format("- Moved urgent job %d to slot %d of resource %d:%s.\n",
