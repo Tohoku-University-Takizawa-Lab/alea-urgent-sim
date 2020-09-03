@@ -49,10 +49,21 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
                     //scheduler.submitJob(gi.getGridlet(), ri.resource.getResourceID());
                     // Add swapping in delay
                     if (gi.isSuspended()) {
+                    	// Swapin will submit job automatically
                     	jobSwapper.swapin(gi, ri);
                     }
-                    else {
+                    //else if (UrgentGridletUtil.isUrgent(gi.getGridlet())){
+                    	// An urgent job, which needs to wait for preemption if needed
                     	//scheduler.submitJob(gi.getGridlet(), r_cand.resource.getResourceID());
+                    	/*double now = gridsim.GridSim.clock();
+                    	if (gi.getGridlet().getArrival_time() < now) {
+                    	}*/
+                    	// Adjust timing to consider glitch of event-based scheduling
+                    	//gi.getGridlet().setArrival_time(gridsim.GridSim.clock());
+                    //	scheduler.submitJobWithDelay(gi.getGridlet(), ri.resource.getResourceID(), gi.getSubmissionDelay());
+                    //}
+                    else {
+                    	//scheduler.submitJob(gi.getGridlet(), ri.resource.getResourceID());
                     	scheduler.submitJobWithDelay(gi.getGridlet(), ri.resource.getResourceID(), gi.getSubmissionDelay());
                     }
 
@@ -106,6 +117,8 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
                         visit++;
                      }
                      jobSwapper.delayUrgentJob(gi, swapResults);
+                     // Adjust delay to consider glitch of event-based scheduling
+                     //gi.getGridlet().addSubmissionDelay(gridsim.GridSim.clock() - gi.getGridlet().getArrival_time());
                      
                      //Scheduler.updateResourceInfos(GridSim.clock());
                      // Now urgent job is ready to submit

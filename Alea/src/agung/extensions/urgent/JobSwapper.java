@@ -112,6 +112,7 @@ public class JobSwapper {
          	//gi.getGridlet().setGridletLength(newLength);
          	//gi.setLength(gi.getGridlet().getGridletLength());
          	gi.setSubmissionDelay(Collections.max(swapResults, swapDelayComparator).delay);
+         	gi.getGridlet().addNumAssocPreempts(swapResults.size());
          }
 	}
 	

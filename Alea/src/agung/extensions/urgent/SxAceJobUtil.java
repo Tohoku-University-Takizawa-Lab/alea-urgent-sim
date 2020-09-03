@@ -79,14 +79,17 @@ public class SxAceJobUtil {
 				JOB_LIMIT_DEF, (double) jobLen, (double) jobLen, 10, 10, "Linux", "Risc arch.", arrival, deadline,
 				1, numNodes, 0.0, URGENT_QUEUE, "", 0.0, ramUsage, numNodes, ppn, UrgentGridletUtil.DEFAULT_URGENCY);
 		
+		gl.setInjected(true);
 		return gl;
 	}
 	
 	public ComplexGridlet generateUrgentJob(double arrival, int ratingPE) {
+		ComplexGridlet gl = null;
 		if (!usePredefinedJobLengths)
-			return generateUrgentJobRandomLen(arrival, ratingPE);
+			gl = generateUrgentJobRandomLen(arrival, ratingPE);
 		else
-			return generateUrgentJobMap(arrival, ratingPE);
+			gl = generateUrgentJobMap(arrival, ratingPE);
+		return gl;
 	}
 	
 	
@@ -115,7 +118,7 @@ public class SxAceJobUtil {
 			gl = new ComplexGridlet(URGENT_ID_OFFSET + currentId.getAndIncrement(), URGENT_USER,
 					JOB_LIMIT_DEF, (double) jobLen, (double) jobLen, 10, 10, "Linux", "Risc arch.", arrival, deadline,
 					1, numNodes, 0.0, URGENT_QUEUE, "", 0.0, ramUsage, numNodes, ppn, UrgentGridletUtil.DEFAULT_URGENCY);
-			
+			gl.setInjected(true);
 		}
 		else {
 			System.err.println("* ERR: map for generating jobs is empty!");

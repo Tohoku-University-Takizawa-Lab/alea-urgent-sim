@@ -58,6 +58,11 @@ public class PreemptiveUJF extends UJF {
                 if (gi.isSuspended()) {
                 	jobSwapper.swapin(gi, r_cand);
                 }
+                //else if (UrgentGridletUtil.isUrgent(gi.getGridlet())) {
+                	//scheduler.submitJob(gi.getGridlet(), r_cand.resource.getResourceID());
+                	//gi.getGridlet().setArrival_time(gridsim.GridSim.clock());
+                //	scheduler.submitJobWithDelay(gi.getGridlet(), r_cand.resource.getResourceID(), gi.getSubmissionDelay());
+                //}
                 else {
                 	//scheduler.submitJob(gi.getGridlet(), r_cand.resource.getResourceID());
                 	scheduler.submitJobWithDelay(gi.getGridlet(), r_cand.resource.getResourceID(), gi.getSubmissionDelay());
@@ -136,6 +141,8 @@ public class PreemptiveUJF extends UJF {
                     }
                     // Punish urgent job with the preemption delays
                     jobSwapper.delayUrgentJob(gi, swapResults);
+                    // Adjust delay to consider glitch of event-based scheduling
+                    //gi.getGridlet().addSubmissionDelay(gridsim.GridSim.clock() - gi.getGridlet().getArrival_time());
                     
                     // Now urgent job is ready to submit
                     //targetRi.addGInfoInExec(gi);

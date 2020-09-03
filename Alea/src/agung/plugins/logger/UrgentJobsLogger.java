@@ -22,7 +22,7 @@ public class UrgentJobsLogger implements JobResourceInfoLogger {
 		try {
 			outputWriter = new FileWriter(outputFile);
 			// Print header
-			outputWriter.append("job_id,numPE,length_t,deadline,arrival_t,start_t,finish_t,arrival_late,finish_late\n");
+			outputWriter.append("job_id,numPE,length_t,deadline,arrival_t,start_t,finish_t,arrival_late,finish_late,assoc_preempts\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -45,7 +45,8 @@ public class UrgentJobsLogger implements JobResourceInfoLogger {
 						+ "," + gl.getOriginalLength() + "," + gl.getDue_date()
 						+ "," + gl.getArrival_time() + "," + gl.getExecStartTime() 
 						+ "," + gl.getFinishTime() + "," + String.format("%.4f", arrival_late) 
-						+ "," + String.format("%.4f", complete_late) + "\n");
+						+ "," + String.format("%.4f", complete_late) 
+						+ "," + gl.getNumAssocPreempts() + "\n");
 				outputWriter.flush();
 			} catch (IOException e) {
 				e.printStackTrace();

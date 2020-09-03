@@ -65,10 +65,12 @@ public class ComplexGridlet extends Gridlet {
     private boolean backfilled;
     private int urgency;
     private int numPreempted;
+    private int numAssocPreempts;
     private double totalSwapDelay;
     private double submissionDelay;
 	// Flag if it is suspended
     private boolean suspended;
+    private boolean injected;
     // Information of original length, since a job can be suspended
     private double originalLength;
     private double totalCPUTime;
@@ -149,6 +151,8 @@ public class ComplexGridlet extends Gridlet {
         this.setSuspended(false);
         this.setOriginalLength(gridletLength);
         this.setTotalCPUTime(0.0);
+        this.setInjected(false);
+        this.setNumAssocPreempts(0);
     }
     
     public ComplexGridlet(int gridletID, String user, long job_limit, double gridletLength, double estimatedLength, long gridletFileSize,
@@ -447,6 +451,10 @@ public class ComplexGridlet extends Gridlet {
 	public void setSubmissionDelay(double submitDelay) {
 		this.submissionDelay = submitDelay;
 	}
+	
+	public void addSubmissionDelay(double delay) {
+		this.submissionDelay += delay;
+	}
 
 	public double getOriginalLength() {
 		return originalLength;
@@ -467,5 +475,26 @@ public class ComplexGridlet extends Gridlet {
 	public void addTotalCPUTime(double cpuTime) {
 		this.totalCPUTime += cpuTime;
 	}
+
+	public boolean isInjected() {
+		return injected;
+	}
+
+	public void setInjected(boolean injected) {
+		this.injected = injected;
+	}
+
+	public int getNumAssocPreempts() {
+		return numAssocPreempts;
+	}
+
+	public void setNumAssocPreempts(int numAssocPreempts) {
+		this.numAssocPreempts = numAssocPreempts;
+	}
+	
+	public void addNumAssocPreempts(int num) {
+		this.numAssocPreempts += num;
+	}
+	
 
 }

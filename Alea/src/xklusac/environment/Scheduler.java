@@ -5,6 +5,8 @@ import eduni.simjava.Sim_event;
 import gridsim.*;
 import java.io.IOException;
 import java.util.*;
+
+import agung.extensions.urgent.UrgentGridletUtil;
 import xklusac.objective_functions.CommonObjectives;
 import xklusac.extensions.*;
 
@@ -1054,11 +1056,17 @@ public class Scheduler extends GridSim {
             if (ev.get_tag() == AleaSimTags.GRIDLET_INFO) {
                 ComplexGridlet gl = (ComplexGridlet) ev.get_data();
                 GridletInfo gi = new GridletInfo(gl);
+                //double now = GridSim.clock();
                 gi.setDue_date(gl.getDue_date() + GridSim.clock());
                 gl.setDue_date(gl.getDue_date() + GridSim.clock());
                 last_job_id = gi.getID();
                 setLengthStatistics(gi);
 
+                if (gl.isInjected()) {
+                	// Adjust delay to consider the glitch between injection time and schedule time
+                	gl.setArrival_time(GridSim.clock());
+                }
+                
                 if (restart) {
                     // reset internal variables at the beginning
                     activePEs = 0.0;
