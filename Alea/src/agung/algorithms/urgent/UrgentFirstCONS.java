@@ -115,6 +115,25 @@ public class UrgentFirstCONS extends CONS {
                       gi.getID(), actual_idx, ri.resource.getResourceID(), ri.resource.getResourceName());
         }
         else {
+        	// Check if it surpass any urgent jobs
+        	if (gi_index != (ri.resSchedule.size() - 1)) {
+        		GridletInfo checkGi = ri.resSchedule.get(gi_index + 1);
+        		if (UrgentGridletUtil.isUrgent(checkGi)) {
+        			ri.removeGInfo(gi);
+        			
+        			// Move to after urgent jobs
+        			int actual_idx = gi_index;
+        			while (actual_idx < ri.resSchedule.size() 
+        					&& UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
+        				actual_idx++;
+        			}
+        			ri.addGInfo(actual_idx, gi);
+        			System.out.format("- Moved job %d to slot %d of resource %d:%s.\n",
+        					gi.getID(), actual_idx, ri.resource.getResourceID(), ri.resource.getResourceName());
+        			gi_index = actual_idx;
+        		}
+        	}
+        	
             // mark job as backfilled if it is not at the end of schedule
             //int gi_index = ri.resSchedule.indexOf(gi);
             if (gi_index != (ri.resSchedule.size() - 1)) {

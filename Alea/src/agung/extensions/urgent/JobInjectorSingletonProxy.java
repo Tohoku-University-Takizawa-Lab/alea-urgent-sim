@@ -38,6 +38,8 @@ public class JobInjectorSingletonProxy implements JobInjector {
 		
 		//RNG rng = initRNG(rngName, injectSeed);
 		RNG rng = new RNGUniform(injectSeed);
+		// Reset jobUtil
+		sxJobUtil.reset();
 		
     	if (injectorClass.equals("RandomBasedJobInjector") && sxJobUtil != null) {
     		

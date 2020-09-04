@@ -5,8 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
-import java.util.SortedMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import xklusac.environment.ComplexGridlet;
@@ -50,6 +48,10 @@ public class SxAceJobUtil {
 			random = new Random();
 		this.usePredefinedJobLengths = useJobLenMap;
 		nodeLengthMap = new LinkedHashMap<>();
+	}
+	
+	public void reset() {
+		currentId.set(0);
 	}
 
 	public void setLengthNodeMap(Map<Integer, Long> lengthNodeMap) {
