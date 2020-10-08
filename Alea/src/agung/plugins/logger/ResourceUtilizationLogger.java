@@ -58,4 +58,10 @@ public class ResourceUtilizationLogger implements JobResourceInfoLogger {
 		}
 	}
 
+	@Override
+	public void logResources(double clock, List<ResourceInfo> resourceInfos, long queueSize, long urgentQueueSize) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

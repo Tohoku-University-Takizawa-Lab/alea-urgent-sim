@@ -909,6 +909,21 @@ public class ResultCollector {
 		
     }
 	
+	public void doLoggers(List<ResourceInfo> infos, long queueSize, long urgentQueueSize, ComplexGridlet gl) {
+		if (infos != null && !infos.isEmpty()) {
+	    	for (JobResourceInfoLogger logger: logPlugins) {
+	    		logger.logResources(GridSim.clock(), infos, queueSize, urgentQueueSize);
+	    	}
+		}
+		
+		if (gl != null) {
+			for (JobResourceInfoLogger logger: logPlugins) {
+				logger.logJob(GridSim.clock(), gl);
+	    	}
+		}
+		
+    }
+	
 	public void closeLoggers() {
 		for (JobResourceInfoLogger logger: logPlugins) {
 			logger.close();

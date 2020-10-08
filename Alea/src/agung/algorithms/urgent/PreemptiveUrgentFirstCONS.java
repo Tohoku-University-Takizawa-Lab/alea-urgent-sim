@@ -78,57 +78,63 @@ public class PreemptiveUrgentFirstCONS extends UrgentFirstCONS {
                     // Preempt regular jobs
                     List<GridletInfo> runInfos = ri.resInExec;
 
-                    // Prioritize jobs with longer time-to-finish to be preempted 
-                    Collections.sort(runInfos, UrgentGridletUtil.finishSoFarComparator);
-
-                    ArrayList<Result> swapResults = new ArrayList<Result>();
-                    int toFree = gi.getNumPE() - ri.getNumFreePE();
-                    int visit = 0;
-                    while (toFree > 0 && visit < runInfos.size()) {
-                        GridletInfo info = runInfos.get(visit);
-
-                        // Preempt only regular jobs
-                        if (!UrgentGridletUtil.isUrgent(info)) {
-	                        System.out.format("- Preempting job %s (PE=%d,Mem=%d) for urgent_job=%d (PE:%d), toFree=%d\n",
-	                                info.getID(), info.getNumPE(), info.getRam(), gi.getID(), gi.getNumPE(), toFree);
+                    // Check if urgent job can be executed by preemption
+                    boolean canRunByPreemption = UrgentGridletUtil.canRunByPreemption(
+                    		gi, runInfos, ri.getNumFreePE());
+                    
+                    if (canRunByPreemption) {
+	                    // Prioritize jobs with longer time-to-finish to be preempted 
+	                    Collections.sort(runInfos, UrgentGridletUtil.finishSoFarComparator);
 	
-	                        //boolean swapped = jobSwapper.swapout(info, ri);
-	                        Result swapResult = jobSwapper.swapout(info, ri);
-	                        
-	                        if (swapResult.isSuccess()) {
-	                        	ri.lowerResInExec(info);
-	                        	ri.removeGInfo(info);
-		                        // Put the preempted job into the earliest queue of regular jobs
-		                        int actual_idx = 0;
-		                        if (ri.resSchedule.size() > 0) {
-			                        while (actual_idx < ri.resSchedule.size() 
-			                        		&& UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
-			                            actual_idx++;
+	                    ArrayList<Result> swapResults = new ArrayList<Result>();
+	                    int toFree = gi.getNumPE() - ri.getNumFreePE();
+	                    int visit = 0;
+	                    while (toFree > 0 && visit < runInfos.size()) {
+	                        GridletInfo info = runInfos.get(visit);
+	
+	                        // Preempt only regular jobs
+	                        if (!UrgentGridletUtil.isUrgent(info)) {
+		                        System.out.format("- Preempting job %s (PE=%d,Mem=%d) for urgent_job=%d (PE:%d), toFree=%d\n",
+		                                info.getID(), info.getNumPE(), info.getRam(), gi.getID(), gi.getNumPE(), toFree);
+		
+		                        //boolean swapped = jobSwapper.swapout(info, ri);
+		                        Result swapResult = jobSwapper.swapout(info, ri);
+		                        
+		                        if (swapResult.isSuccess()) {
+		                        	ri.lowerResInExec(info);
+		                        	ri.removeGInfo(info);
+			                        // Put the preempted job into the earliest queue of regular jobs
+			                        int actual_idx = 0;
+			                        if (ri.resSchedule.size() > 0) {
+				                        while (actual_idx < ri.resSchedule.size() 
+				                        		&& UrgentGridletUtil.isUrgent(ri.resSchedule.get(actual_idx))) {
+				                            actual_idx++;
+				                        }
 			                        }
+			                        ri.addGInfo(actual_idx, info);
+			                        System.out.format("- Put back preempted job %d to slot %d of resource %d:%s.\n",
+			                                info.getID(), actual_idx, ri.resource.getResourceID(), ri.resource.getResourceName());
+			                        swapResults.add(swapResult);
 		                        }
-		                        ri.addGInfo(actual_idx, info);
-		                        System.out.format("- Put back preempted job %d to slot %d of resource %d:%s.\n",
-		                                info.getID(), actual_idx, ri.resource.getResourceID(), ri.resource.getResourceName());
-		                        swapResults.add(swapResult);
+		
+		                        toFree -= info.getNumPE();
 	                        }
+	                        visit++;
+	                     }
+	                     jobSwapper.delayUrgentJob(gi, swapResults);
+	                     // Adjust delay to consider glitch of event-based scheduling
+	                     //gi.getGridlet().addSubmissionDelay(gridsim.GridSim.clock() - gi.getGridlet().getArrival_time());
+	                     
+	                     //Scheduler.updateResourceInfos(GridSim.clock());
+	                     // Now urgent job is ready to submit
+	                     //ri.addGInfoInExec(gi);
+	                     //gi.setResourceID(ri.resource.getResourceID());
+	                     //scheduler.submitJob(gi.getGridlet(), gi.getResourceID());
 	
-	                        toFree -= info.getNumPE();
-                        }
-                        visit++;
-                     }
-                     jobSwapper.delayUrgentJob(gi, swapResults);
-                     // Adjust delay to consider glitch of event-based scheduling
-                     //gi.getGridlet().addSubmissionDelay(gridsim.GridSim.clock() - gi.getGridlet().getArrival_time());
-                     
-                     //Scheduler.updateResourceInfos(GridSim.clock());
-                     // Now urgent job is ready to submit
-                     //ri.addGInfoInExec(gi);
-                     //gi.setResourceID(ri.resource.getResourceID());
-                     //scheduler.submitJob(gi.getGridlet(), gi.getResourceID());
-
-                     //ri.is_ready = true;
-                     //scheduled++;
-                     return scheduled;
+	                     //ri.is_ready = true;
+	                     //scheduled++;
+                    }
+                    return scheduled;
                 }
             }
         }

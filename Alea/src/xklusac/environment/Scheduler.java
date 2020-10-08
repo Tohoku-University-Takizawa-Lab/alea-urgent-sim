@@ -808,7 +808,8 @@ public class Scheduler extends GridSim {
                 //	ExperimentSetup.result_collector.doLoggers(resourceInfoList, queue.size(), null);
                 //}
                 //else {
-                ExperimentSetup.result_collector.doLoggers(resourceInfoList, getQueueSize(), null);
+                //ExperimentSetup.result_collector.doLoggers(resourceInfoList, getQueueSize(), null);
+                ExperimentSetup.result_collector.doLoggers(resourceInfoList, getQueueSize(), getUrgentQueueSize(), null);
                 //}
                 //super.sim_schedule(this.getEntityId(this.getEntityName()), (3 * 3600.0), AleaSimTags.LOG_SCHEDULER);
                 // Invoke logger hourly
@@ -1062,7 +1063,7 @@ public class Scheduler extends GridSim {
                 last_job_id = gi.getID();
                 setLengthStatistics(gi);
 
-                if (gl.isInjected()) {
+                if (gl.isInjected() || UrgentGridletUtil.isUrgent(gl)) {
                 	// Adjust delay to consider the glitch between injection time and schedule time
                 	gl.setArrival_time(GridSim.clock());
                 }
@@ -1756,6 +1757,27 @@ public class Scheduler extends GridSim {
         }
 
         return size + getScheduleCPUSize();
+    }
+    
+    private int getUrgentQueueSize() {
+    	 int size = 0;
+         for (int q = 0; q < all_queues.size(); q++) {
+        	 for (Object oInfo: all_queues.get(q)) {
+        		 GridletInfo info = (GridletInfo) oInfo;
+        		 if (UrgentGridletUtil.isUrgent(info)) {
+        			 size++;
+        		 }
+        	 }
+         }
+         for (int i = 0; i < resourceInfoList.size(); i++) {
+             ResourceInfo ri = (ResourceInfo) resourceInfoList.get(i);
+             for (GridletInfo info: ri.resSchedule) {
+        		 if (UrgentGridletUtil.isUrgent(info)) {
+        			 size++;
+        		 }
+        	 }
+         }
+         return size;
     }
 
     /**

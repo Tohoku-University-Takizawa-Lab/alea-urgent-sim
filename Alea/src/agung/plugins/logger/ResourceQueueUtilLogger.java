@@ -71,4 +71,9 @@ public class ResourceQueueUtilLogger implements JobResourceInfoLogger {
 		}
 	}
 
+	@Override
+	public void logResources(double clock, List<ResourceInfo> resourceInfos, long queueSize, long urgentQueueSize) {
+		logResources(clock, resourceInfos, queueSize);
+	}
+
 }

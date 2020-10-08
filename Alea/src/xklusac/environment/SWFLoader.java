@@ -281,6 +281,10 @@ public class SWFLoader extends GridSim {
                 ram = Math.round(ram / 1024.0);
                 queue = values[19];
             }
+            else if (data_set.contains("SXO")) {
+            	// DWD uses total size of memory, so let's divide it by the CPU number.
+            	ram = Math.round(ram / numCPU);
+            }
             double gbram = Math.round(ram * 10 / 1048576.0) / 10.0;
             //System.out.println(id+ " requests "+ram+" KB RAM, "+gbram+" GB RAM per "+numCPU+" CPUs");
         }
@@ -468,6 +472,12 @@ public class SWFLoader extends GridSim {
         else if (data_set.contains("LPC-EGEE") ) {
         	int gid = Integer.parseInt(values[12]);
         	if (gid == 2) {	// BioMed group
+        		urgency = UrgentGridletUtil.DEFAULT_URGENCY;
+        		numUrgentJobs++;
+        	}
+        }
+        else if (data_set.startsWith("SXO_") && (data_set.endsWith("-urgentq.swf"))) {
+        	if (queue.equals("sx_rout")) {
         		urgency = UrgentGridletUtil.DEFAULT_URGENCY;
         		numUrgentJobs++;
         	}

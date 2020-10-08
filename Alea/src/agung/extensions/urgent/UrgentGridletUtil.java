@@ -83,4 +83,26 @@ public class UrgentGridletUtil {
 	        	return 0;
 		}
 	};
+	
+	public static boolean canRunByPreemption(GridletInfo gi, List<GridletInfo> runningJobs, int nowFreePE) {
+		boolean result = true;
+		
+		int toFree = gi.getNumPE() - nowFreePE;
+	    int usedPEbyRegular = 0;
+	    int usedPEbyUrgent = 0;
+	    for (GridletInfo info: runningJobs) {
+	    	if (!UrgentGridletUtil.isUrgent(info))
+	    		usedPEbyRegular += info.getNumPE();
+	    	else
+	    		usedPEbyUrgent += info.getNumPE();
+	    }
+	  
+		if (toFree > usedPEbyRegular) {
+			result = false;
+			System.out.println("** Urgent job #" + gi.getID() + " (nuMPE=" + gi.getNumPE() 
+								+ ") cannot be executed by preemption (usedPEbyRegular=" 
+								+ usedPEbyRegular + ", usedPEbyUrgent=" + usedPEbyUrgent + ").");
+		}
+		return result;
+	}
 }

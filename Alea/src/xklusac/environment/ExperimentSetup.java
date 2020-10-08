@@ -35,6 +35,7 @@ import agung.algorithms.urgent.PreemptiveUJF;
 import agung.algorithms.urgent.PreemptiveUrgentCONS;
 import agung.algorithms.urgent.PreemptiveUrgentFirstCONS;
 import agung.algorithms.urgent.UJF;
+import agung.algorithms.urgent.UJFB;
 import agung.algorithms.urgent.UrgentCONS;
 import agung.algorithms.urgent.UrgentFirstCONS;
 import agung.extensions.urgent.ConstantSwapTime;
@@ -976,7 +977,7 @@ public class ExperimentSetup {
                 /*
                  * Preemptive-based schedulers
                  */
-                if (alg >= 25 && alg <= 27) {
+                if (alg >= 25 && alg <= 28) {
                 	
                 	SwapTimeGen swapTimeGen = null;
                 	
@@ -1026,6 +1027,12 @@ public class ExperimentSetup {
 	                    // Conservative backfilling prioritizing Urgent jobs (no RAM support)
 	                    use_compresion = true;
 	                    suff = "PreemptiveUrgentFirstCONS+compression";
+	                }
+	                if (alg == 28) {
+	                    policy = new UJFB(scheduler, jobSwapper);
+	                    // Conservative backfilling prioritizing Urgent jobs (no RAM support)
+	                    use_compresion = true;
+	                    suff = "UJFB";
 	                }
                 }
 
