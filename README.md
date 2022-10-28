@@ -1,13 +1,13 @@
 ## Urgent-Sim: Preemptive Parallel Job Scheduling for Heterogeneous Systems Supporting Urgent Computing
 
-This is a code repository for the job scheduler proposed in the following paper:
+This is a code repository for the job scheduler proposed in the paper:
 
 Agung, M., Watanabe, Y., Weber, H., Egawa, R. and Takizawa, H., 2021. Preemptive parallel job scheduling for heterogeneous systems supporting urgent computing. IEEE Access, 9, pp.17557-17571. https://doi.org/10.1109/ACCESS.2021.3053162
 
 ## Usage
 
 Prerequisite:
-- JDK8 and later
+- JDK8 or later
 
 Usage:
     
